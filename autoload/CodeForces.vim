@@ -1,5 +1,8 @@
 " Author: Igor Kolobov, Igorjan94, Igorjan94@{mail.ru, gmail.com, yandex.ru}, https://github.com/Igorjan94, http://codeforces.ru/profile/Igorjan94
 
+let s:CodeForcesFrom = 1
+let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.friends'), '\n')[0], '/')[:-2], '/')
+
 function! CodeForces#CodeForcesNextStandings() "{{{
     let s:CodeForcesFrom = s:CodeForcesFrom + g:CodeForcesCount
     call CodeForces#CodeForcesStandings(g:CodeForcesContestId)
