@@ -122,7 +122,7 @@ Load problem B from `g:CodeForcesContestId`
 
 - ` :CodeForcesLoadTask B `
 
-Load problem B1 from contest 510
+Load problem B from contest 510
 
 - ` :CodeForcesLoadTaskContestId 510 B `
 
