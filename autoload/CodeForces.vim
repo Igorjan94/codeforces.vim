@@ -194,7 +194,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
                 submissionExt += 'txt'
             vim.command('tabnew ' + handle + index + submissionExt)
             del vim.current.buffer[:]
-            vim.current.buffer.append((''.join(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text).split('->')[1:]).split('**:')[0].split('\n')).encode('utf-8'))
+            vim.current.buffer.append(''.join(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text.encode('utf-8')).split('->')[1:]).split('**:')[0].split('\n'))
             del vim.current.buffer[0:3]
             del vim.current.buffer[-7:]
             vim.command('1,$<')
@@ -326,7 +326,7 @@ index = vim.eval("a:index").upper()
 contestId = vim.eval("a:contestId")
 vim.command('tabnew ' + index + '.problem')
 del vim.current.buffer[:]
-vim.current.buffer.append((html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text).split(index + '.')[1].split('[Codeforces]')[0].split('\n')).encode('utf-8'))
+vim.current.buffer.append((html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text.encode('utf-8')).split(index + '.')[1].split('[Codeforces]')[0]).split('\n'))
 del vim.current.buffer[0]
 del vim.current.buffer[1:4]
 del vim.current.buffer[2:5]
