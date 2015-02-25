@@ -61,8 +61,8 @@ else:
                 if 'points' in problem.keys():
                     price = ' (' + str(int(problem['points'])) + ')'
                 problems += ' | ' + problem['index'] + price
-            vim.current.buffer.append(contestName)
-            vim.current.buffer.append(problems)
+            vim.current.buffer.append(contestName.encode('utf-8'))
+            vim.current.buffer.append(problems.encode('utf-8'))
             for y in x['rows']:
                 hacks = ' '
                 if y['successfulHackCount'] > 0:
@@ -82,7 +82,7 @@ else:
                             s += '-' + str(pr['rejectedAttemptCount'])
                     else:
                         s += str(int(pr['points']))
-                vim.current.buffer.append(s)
+                vim.current.buffer.append(s.encode('utf-8'))
             vim.command("3,$EasyAlign *| {'a':'c'}")
             del vim.current.buffer[0]
     except Exception, e:
@@ -194,7 +194,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
                 submissionExt += 'txt'
             vim.command('tabnew ' + handle + index + submissionExt)
             del vim.current.buffer[:]
-            vim.current.buffer.append(''.join(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text).split('->')[1:]).split('**:')[0].split('\n'))
+            vim.current.buffer.append((''.join(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text).split('->')[1:]).split('**:')[0].split('\n')).encode('utf-8'))
             del vim.current.buffer[0:3]
             del vim.current.buffer[-7:]
             vim.command('1,$<')
@@ -326,7 +326,7 @@ index = vim.eval("a:index").upper()
 contestId = vim.eval("a:contestId")
 vim.command('tabnew ' + index + '.problem')
 del vim.current.buffer[:]
-vim.current.buffer.append(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text).split(index + '.')[1].split('[Codeforces]')[0].split('\n'))
+vim.current.buffer.append((html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text).split(index + '.')[1].split('[Codeforces]')[0].split('\n')).encode('utf-8'))
 del vim.current.buffer[0]
 del vim.current.buffer[1:4]
 del vim.current.buffer[2:5]
