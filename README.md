@@ -3,7 +3,7 @@
 ## What allows to do
 
 * Watch standings of contests (pages, friends, unofficial)
-* Submit source code (thanks to [http://codeforces.ru/blog/entry/14786](CountZero))
+* Submit source code (thanks to [CountZero](http://codeforces.ru/blog/entry/14786])
 * Watch result of last user's submissions
 * Load text of problems
 * Download last submission of user to problem  
@@ -153,7 +153,7 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 * Python
   * requests  (all network)
   * html2text (loadProblem, loadSubmission)
-* [https://github.com/junegunn/vim-easy-align](EasyAlign) for beautiful standings 
+* [EasyAlign](https://github.com/junegunn/vim-easy-align) for beautiful standings 
 
 ## Known <s>bugs</s> features
 
