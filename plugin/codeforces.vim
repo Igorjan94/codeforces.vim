@@ -11,7 +11,7 @@ set cpo&vim
 
 "{{{
 let s:CodeForcesFrom = 1
-let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.standings'), '\n')[0], '/')[:-2], '/')
+let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.friends'), '\n')[0], '/')[:-2], '/')
  
 if !exists('g:CodeForcesContestId') 
     let g:CodeForcesContestId      = 0
