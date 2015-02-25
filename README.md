@@ -3,10 +3,10 @@
 ## What allows to do
 
 * Watch standings of contests (pages, friends, unofficial)
-* Submit source code (thanks to *TODO add link to cf user*)
+* Submit source code (thanks to [http://codeforces.ru/blog/entry/14786](CountZero))
 * Watch result of last user's submissions
 * Load text of problems
-* Download last submission of user to problem
+* Download last submission of user to problem  
 *TODO screenshots*
 
 ## What I'm planning to do
@@ -50,10 +50,15 @@ show only friends(default false):
 
 - `let g:CodeForcesFriends = 1`
 
-set values to submiti *TODO screenshots*:
+set values to submit:  
+*TODO screenshots*
 
 - `let g:CodeForcesXUser = [x] * 32 `
 - `let g:CodeForcesToken = [x] * 92 `
+
+set your handle:
+
+- `let g:CodeForcesUsername = 'Igorjan94'`
 
 ### Functions
 
@@ -133,11 +138,11 @@ I think `<S-F5>` very difficult to press ocasionally, so:
 
 ### Other
 
-Folder CF:
+Folder CF:  
 `codeforces.standings` -- file to store standings
 
 `codeforces.users` -- file with colors. In next versions will be command-generated, now by hand. Let's color users how you want!
-Format: `handle Color`
+Format: `handle Color`  
 `Color = { Red, Yellow, Purple, Blue, Green, Gray, Unrated }`
 
 `codeforces.friends`
@@ -146,9 +151,9 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 ## Dependencies
 
 * Python
-** requests  (all network)
-** html2text (loadProblem, loadSubmission)
-* EasyAlign for beautiful standings (https://github.com/junegunn/vim-easy-align)
+  * requests  (all network)
+  * html2text (loadProblem, loadSubmission)
+* [https://github.com/junegunn/vim-easy-align](EasyAlign) for beautiful standings 
 
 ## Known <s>bugs</s> features
 
@@ -159,7 +164,7 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 
 Igor Kolobov, aka Igorjan94
 
-My vk:      Igorjan94
-My cf:      Igorjan94
-My mail:    Igorjan94@{mail.ru, yandex.ru, gmail.com}
-My github:  Igorjan94
+My vk:      Igorjan94  
+My cf:      Igorjan94  
+My mail:    Igorjan94@{mail.ru, yandex.ru, gmail.com}  
+My github:  Igorjan94  
