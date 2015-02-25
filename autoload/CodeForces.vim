@@ -103,7 +103,7 @@ endfunction
 "}}}
 
 function! CodeForces#CodeForcesUnofficial() "{{{
-    if g:CodeForcesUnofficial == 1
+    if g:CodeForcesShowUnofficial == 1
         let g:CodeForcesShowUnofficial = 0
     else
         let g:CodeForcesShowUnofficial = 1
