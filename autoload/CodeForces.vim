@@ -326,7 +326,6 @@ index = vim.eval("a:index").upper()
 contestId = vim.eval("a:contestId")
 vim.command('tabnew ' + index + '.problem')
 del vim.current.buffer[:]
-#vim.current.buffer.append(index + '\r' + html2text.html2text(''.join(open("problem.txt", 'r').readlines())).split(index)[1].split('[Codeforces]')[0])
 vim.current.buffer.append(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text).split(index + '.')[1].split('[Codeforces]')[0].split('\n'))
 del vim.current.buffer[0]
 del vim.current.buffer[1:4]

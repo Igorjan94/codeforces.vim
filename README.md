@@ -20,6 +20,11 @@
 
 ## Using and configuring
 
+### Installation
+
+* Use your favourite plugin manager, for example `Bundle 'Igorjan94/codeforces.vim'`, then `:PluginInstall`
+* Just clone rep to your `.vim/` directory
+
 all variables and functions have name with prefix 'CodeForces'
 
 ### Variables
