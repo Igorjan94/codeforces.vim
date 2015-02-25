@@ -31,8 +31,7 @@ python << EOF
 import vim
 import requests
 import json
-
-if vim.eval("a:0") == 1:
+if vim.eval("a:0") == '1':
     vim.command("let g:CodeForcesContestId = a:1")
 if vim.eval("g:CodeForcesContestId") == 0:
     vim.command("echom \"CodeForcesContestId is not set. Add it in .vimrc or just call CodeForces#CodeForcesStandings <CodeForcesContestId>\"")
