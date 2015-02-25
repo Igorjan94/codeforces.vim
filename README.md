@@ -2,12 +2,11 @@
 
 ## What allows to do
 
-* Watch standings of contests (pages, friends, unofficial)
+* Watch standings of contests ([Unofficial](http://i.imgur.com/yI5bhBs.png), [Friends](http://i.imgur.com/2o730zV.png), [Official](http://i.imgur.com/avSplri.png))
 * Submit source code (thanks to [CountZero](http://codeforces.ru/blog/entry/14786]))
-* Watch result of last user's submissions
-* Load text of problems
-* Download last submission of user to problem  
-*TODO screenshots*
+* Watch result of last user's submissions ([Results](http://i.imgur.com/hDWFJXo.png))
+* Load text of problems ([Russian](http://i.imgur.com/Q5M9fsd.png) | [English](http://i.imgur.com/NAmMBEj.png))
+* Download last submission of user to problem ([qwerty787788's solution to F](http://i.imgur.com/vqvZV7Y.png))
 
 ## What I'm planning to do
 
@@ -19,6 +18,11 @@
 * ...
 
 ## Using and configuring
+
+### Installation
+
+* Use your favourite plugin manager, for example `Bundle 'Igorjan94/codeforces.vim'`, then `:PluginInstall`
+* Just clone rep to your `.vim/` directory
 
 all variables and functions have name with prefix 'CodeForces'
 
@@ -40,9 +44,9 @@ set count of displayed submissions to 10(default 5):
 
 - `let g:CodeForcesCountOfSubmits = 10`
 
-set domain to 'en'(default 'ru'):
+set domain to 'com'(default 'ru'):
 
-- `let g:CodeForcesDomain = 'en'`
+- `let g:CodeForcesDomain = 'com'`
 
 show unofficial(default false):
 
@@ -53,7 +57,9 @@ show only friends(default false):
 - `let g:CodeForcesFriends = 1`
 
 set values to submit:  
-*TODO screenshots*
+
+[Cookies in opera](http://imgur.com/B3C2KtK)  
+You should copy X-User value(92 hex digits) and JSession(32 hex digits without '-n1')
 
 - `let g:CodeForcesXUser = [x] * 32 `
 - `let g:CodeForcesToken = [x] * 92 `
@@ -116,7 +122,7 @@ Load problem B from `g:CodeForcesContestId`
 
 - ` :CodeForcesLoadTask B `
 
-Load problem B1 from contest 510
+Load problem B from contest 510
 
 - ` :CodeForcesLoadTaskContestId 510 B `
 
@@ -160,13 +166,12 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 ## Known <s>bugs</s> features
 
 * It doesn't check any information entered by user
-* THEY MUST BE, I just haven't find'em
+* THEY MUST BE, I just haven't found'em
 
 ## Author
 
 Igor Kolobov, aka Igorjan94
 
-My vk:      Igorjan94  
 My cf:      Igorjan94  
-My mail:    Igorjan94@{mail.ru, yandex.ru, gmail.com}  
+My mail:    Igorjan94@{mail.ru, gmail.com}  
 My github:  Igorjan94  
