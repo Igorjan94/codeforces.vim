@@ -172,7 +172,6 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 
 Igor Kolobov, aka Igorjan94
 
-My vk:      Igorjan94  
 My cf:      Igorjan94  
-My mail:    Igorjan94@{mail.ru, yandex.ru, gmail.com}  
+My mail:    Igorjan94@{mail.ru, gmail.com}  
 My github:  Igorjan94  
