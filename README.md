@@ -58,7 +58,7 @@ show only friends(default false):
 
 set values to submit:  
 
-[Cookies in opera](http://imgur.com/B3C2KtK)  
+[Cookies in opera](http://i.imgur.com/B3C2KtK.png)  
 You should copy X-User value(92 hex digits) and JSession(32 hex digits without '-n1')
 
 - `let g:CodeForcesXUser = [x] * 32 `
