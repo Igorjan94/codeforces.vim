@@ -1,4 +1,4 @@
-# Vim plugin for codeforces.ru/codeforces.com
+# Vim plugin for CodeForces
 
 ## What allows to do
 
