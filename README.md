@@ -3,7 +3,7 @@
 ## What allows to do
 
 * Watch standings of contests (pages, friends, unofficial)
-* Submit source code (thanks to [CountZero](http://codeforces.ru/blog/entry/14786])
+* Submit source code (thanks to [CountZero](http://codeforces.ru/blog/entry/14786]))
 * Watch result of last user's submissions
 * Load text of problems
 * Download last submission of user to problem  
@@ -15,6 +15,8 @@
 * Room standings
 * Parsing sapmles automatic testing like (C|J)Helper does
 * Deleting unused code, local uncludes (C++)
+* Change `tabnew` to user-defined command
+* ...
 
 ## Using and configuring
 
