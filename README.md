@@ -166,7 +166,7 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 ## Known <s>bugs</s> features
 
 * It doesn't check any information entered by user
-* THEY MUST BE, I just haven't find'em
+* THEY MUST BE, I just haven't found'em
 
 ## Author
 
