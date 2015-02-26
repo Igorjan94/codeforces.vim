@@ -4,12 +4,21 @@
 if exists("g:loaded_cf") || &cp
     finish
 endif
-let g:loaded_cf          = 0.0
+let g:loaded_cf          = 0.1
 let s:keepcpo            = &cpo
 set cpo&vim
 "}}}
 
 "{{{
+if !exists('g:CodeForcesCommandStandings') 
+    let g:CodeForcesCommandStandings = 'tabnew'
+endif
+if !exists('g:CodeForcesCommandLoadTask') 
+    let g:CodeForcesCommandLoadTask  = 'tabnew'
+endif
+if !exists('g:CodeForcesCommandSubmission') 
+    let g:CodeForcesCommandSubmission= 'tabnew'
+endif
 if !exists('g:CodeForcesContestId') 
     let g:CodeForcesContestId      = 0
 endif
@@ -62,6 +71,7 @@ nmap <leader>cfs <ESC>:CodeForcesStandings<CR>
 nmap <leader>cff <ESC>:CodeForcesFriendsSet<CR>
 nmap <leader>cfu <ESC>:CodeForcesUnofficial<CR>
 nmap <leader>cfl <ESC>:CodeForcesLoadTask 
+nmap <leader>cfP <ESC>:CodeForcesPageStandings
 
 noremap <S-f5>  <ESC>:w<CR><ESC>:CodeForcesSubmit<CR>
 noremap <S-f6>  <ESC>:w<CR><ESC>:CodeForcesUserSubmissions<CR>

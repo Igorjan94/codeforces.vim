@@ -10,11 +10,11 @@
 
 ## What I'm planning to do
 
-* Full coloring of standings
+* Full coloring of standings (I tested it on 10k users, it runs veryveryvery slow. So, I leave it as it is or, please, say how to do it in other way)
 * Room standings
 * Parsing sapmles automatic testing like (C|J)Helper does
 * Deleting unused code, local uncludes (C++)
-* Change `tabnew` to user-defined command
+* <s>Change `tabnew` to user-defined command</s> Done.
 * ...
 
 ## Using and configuring
@@ -63,6 +63,12 @@ You should copy X-User value(92 hex digits) and JSession(32 hex digits without '
 
 - `let g:CodeForcesXUser = [x] * 32 `
 - `let g:CodeForcesToken = [x] * 92 `
+
+set command to open standings/problem/submission (default 'tabnew'):
+
+- `let g:CodeForcesCommandStandings = 'badd'
+- `let g:CodeForcesCommandLoadTask  = 'badd'
+- `let g:CodeForcesCommandSubmission= 'badd'
 
 set your handle:
 
@@ -138,6 +144,7 @@ Of course, bind it like you want, I just suggest this:
 - ` noremap <leader>cff <ESC>:CodeForces_F_riendsSet<CR>`
 - ` noremap <leader>cfu <ESC>:CodeForces_U_nofficial<CR>`
 - ` noremap <leader>cfl <ESC>:CodeForces_L_oadTask `
+- ` noremap <leader>cfP <ESC>:CodeForces_P_ageStandings `
 
 I think `<S-F5>` very difficult to press ocasionally, so:
 

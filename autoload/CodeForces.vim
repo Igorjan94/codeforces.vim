@@ -46,7 +46,8 @@ else:
     url = api + 'contest.standings?contestId=' + vim.eval("g:CodeForcesContestId") + '&from=' + vim.eval("s:CodeForcesFrom") + '&count=' + vim.eval("g:CodeForcesCount") + showUnofficial + friends
     try:
         if vim.eval("expand(\'%:e\')").lower() != 'standings':
-            vim.command('tabnew ' + vim.eval('s:CodeForcesPrefix') + '/codeforces.standings')
+            vim.command(vim.eval('g:CodeForcesCommandStandings') + ' ' + vim.eval('s:CodeForcesPrefix') + '/codeforces.standings')
+            vim.command('call CodeForces#CodeForcesColor()')
         del vim.current.buffer[:]
         x = requests.get(url).json()
         if x['status'] != 'OK':
@@ -87,13 +88,13 @@ else:
     except Exception, e:
         print e
 EOF
-call CodeForces#CodeForcesColor()
 endfunction
 "}}}
 
 function! CodeForces#CodeForcesFriendsSet() "{{{
     if g:CodeForcesFriends == 0
         let g:CodeForcesFriends = 1
+        let g:CodeForcesFrom = 1
     else
         let g:CodeForcesFriends = 0
     endif
@@ -191,7 +192,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
                 submissionExt += 'rb'
             else:
                 submissionExt += 'txt'
-            vim.command('tabnew ' + handle + index + submissionExt)
+            vim.command(vim.eval('g:CodeForcesCommandSubmission') + ' ' + handle + index + submissionExt)
             del vim.current.buffer[:]
             vim.current.buffer.append((''.join(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text).split('->')[1:]).split('**:')[0].encode('utf-8').split('\n')))
             del vim.current.buffer[0:3]
@@ -323,7 +324,7 @@ import html2text
 
 index = vim.eval("a:index").upper()
 contestId = vim.eval("a:contestId")
-vim.command('tabnew ' + index + '.problem')
+vim.command(vim.eval('g:CodeForcesCommandLoadTask') + ' ' + index + '.problem')
 del vim.current.buffer[:]
 vim.current.buffer.append((html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text).split(index + '.')[1].split('[Codeforces]')[0].encode('utf-8').split('\n')))
 del vim.current.buffer[0]
