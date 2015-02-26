@@ -66,9 +66,9 @@ You should copy X-User value(92 hex digits) and JSession(32 hex digits without '
 
 set command to open standings/problem/submission (default 'tabnew'):
 
-- `let g:CodeForcesCommandStandings = 'badd'
-- `let g:CodeForcesCommandLoadTask  = 'badd'
-- `let g:CodeForcesCommandSubmission= 'badd'
+- `let g:CodeForcesCommandStandings = 'badd'`
+- `let g:CodeForcesCommandLoadTask  = 'badd'`
+- `let g:CodeForcesCommandSubmission= 'badd'`
 
 set your handle:
 
