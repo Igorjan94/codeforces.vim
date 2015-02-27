@@ -74,7 +74,7 @@ else:
                 unof = ''
                 if y['party']['participantType'] != 'CONTESTANT':
                     unof = '*'
-                s = ' ' + str(y['rank']) + ' | ' + y['party']['members'][0]['handle'] + unof + ' | ' + hacks + '|' + str(int(y['points']))
+                s = ' ' + str(y['rank']) + ' | ' + ', '.join(x['handle'] for x in y['party']['members']) + unof + ' | ' + hacks + '|' + str(int(y['points']))
                 for pr in y['problemResults']:
                     s += ' | '
                     if pr['points'] == 0.0:
