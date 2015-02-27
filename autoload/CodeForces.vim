@@ -34,7 +34,7 @@ import json
 if vim.eval("a:0") == '1':
     vim.command("let g:CodeForcesContestId = a:1")
 if vim.eval("g:CodeForcesContestId") == 0:
-    vim.command("echom \"CodeForcesContestId is not set. Add it in .vimrc or just call CodeForces#CodeForcesStandings <CodeForcesContestId>\"")
+    print("\"CodeForcesContestId is not set. Add it in .vimrc or just call :CodeForcesStandings <CodeForcesContestId>\"")
 else:
     api = "http://codeforces." + vim.eval("g:CodeForcesDomain") + "/api/"
     showUnofficial = ''
@@ -335,5 +335,46 @@ vim.current.buffer[0] = index + '.' + vim.current.buffer[0]
 EOF
 :%s/    \n/\r/g
 :%s/\n\n\n/\r/g
+endfunction
+"}}}
+
+python << EOF
+import vim
+import requests
+import html2text
+import re
+x_user = vim.eval('g:CodeForcesXUser')
+csrf_token = vim.eval('g:CodeForcesToken')
+
+def color(rating):
+    if rating == 0:
+        return "Unrated"
+    if rating < 1200:
+        return "Gray"
+    if rating < 1500:
+        return "Green"
+    if rating < 1700:
+        return "Blue"
+    if rating < 1900:
+        return "Purple"
+    if rating < 2200:
+        return "Yellow"
+    return "Red"
+
+def loadFriends():
+    r = html2text.html2text(requests.post("http://codeforces." + vim.eval('g:CodeForcesDomain') + "/ratings/friends/true", params = {"csrf_token": csrf_token}, cookies = {"X-User": x_user}).text).split('---|---|---|---')[1].split('[Codeforces]')[0].replace('\n', '')
+    r = re.sub(r'\(.*?\)', '', r)
+    r = re.sub(r'\[.*?\]\[', '\n', r)
+    for x in r.split('\n')[1:]:
+        y = x.split('|')
+        if len(y) >= 2:
+            print(y[0][:-2] + ' ' + color(int(y[2].replace(' ', ''))))
+EOF
+
+function! CodeForces#CodeForcesSetColors() "{{{
+python << EOF
+import vim
+loadFriends()
+EOF
 endfunction
 "}}}
