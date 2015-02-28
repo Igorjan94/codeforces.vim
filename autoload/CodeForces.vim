@@ -1,6 +1,7 @@
 " Author: Igor Kolobov, Igorjan94, Igorjan94@{mail.ru, gmail.com, yandex.ru}, https://github.com/Igorjan94, http://codeforces.ru/profile/Igorjan94
 
 let s:CodeForcesFrom = 1
+let s:CodeForcesRoom = '0'
 let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.friends'), '\n')[0], '/')[:-2], '/')
 
 function! CodeForces#CodeForcesNextStandings() "{{{
@@ -26,6 +27,17 @@ function! CodeForces#CodeForcesPageStandings(page) "{{{
 endfunction
 "}}}
 
+function! CodeForces#CodeForcesRoomStandings() "{{{
+    if s:CodeForcesRoom == 1
+        let s:CodeForcesRoom = 0
+        let s:CodeForcesFrom = 1
+    else
+        let s:CodeForcesRoom = 1
+    endif
+    call CodeForces#CodeForcesStandings(g:CodeForcesContestId)
+endfunction
+"}}}
+
 function! CodeForces#CodeForcesStandings(...) "{{{
 python << EOF
 import vim
@@ -39,11 +51,18 @@ else:
     api = "http://codeforces." + vim.eval("g:CodeForcesDomain") + "/api/"
     showUnofficial = ''
     friends = ''
+    room = ''
+    contest_id = vim.eval('g:CodeForcesContestId')
+    if vim.eval('s:CodeForcesRoom') != '0':
+        try:
+            room = '&room=' + str(requests.get('http://codeforces.ru/api/contest.standings?contestId=' + contest_id + '&handles=' + vim.eval('g:CodeForcesUsername') + '&showUnofficial=true').json()['result']['rows'][0]['party']['room'])
+        except:
+            print('No rooms or smthng else')
     if vim.eval('g:CodeForcesFriends') != '0':
         friends = '&handles=' + ';'.join(x.split()[2] for x in open(vim.eval('s:CodeForcesPrefix') + '/codeforces.friends', 'r').readlines())
     if vim.eval('g:CodeForcesShowUnofficial') != '0':
         showUnofficial = '&showUnofficial=true'
-    url = api + 'contest.standings?contestId=' + vim.eval("g:CodeForcesContestId") + '&from=' + vim.eval("s:CodeForcesFrom") + '&count=' + vim.eval("g:CodeForcesCount") + showUnofficial + friends
+    url = api + 'contest.standings?contestId=' + contest_id + '&from=' + vim.eval("s:CodeForcesFrom") + '&count=' + vim.eval("g:CodeForcesCount") + showUnofficial + friends + room
     try:
         if vim.eval("expand(\'%:e\')").lower() != 'standings':
             vim.command(vim.eval('g:CodeForcesCommandStandings') + ' ' + vim.eval('s:CodeForcesPrefix') + '/codeforces.standings')

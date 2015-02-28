@@ -48,6 +48,7 @@ endif
 "{{{
 command! -nargs=0 CodeForcesNextStandings     call CodeForces#CodeForcesNextStandings()
 command! -nargs=0 CodeForcesPrevStandings     call CodeForces#CodeForcesPrevStandings()
+command! -nargs=0 CodeForcesRoomStandings     call CodeForces#CodeForcesRoomStandings()
 command! -nargs=1 CodeForcesPageStandings     call CodeForces#CodeForcesPageStandings(<args>)
 command! -nargs=? CodeForcesStandings         call CodeForces#CodeForcesStandings(<args>)
 command! -nargs=0 CodeForcesFriendsSet        call CodeForces#CodeForcesFriendsSet()
@@ -72,6 +73,7 @@ nmap <leader>cff <ESC>:CodeForcesFriendsSet<CR>
 nmap <leader>cfu <ESC>:CodeForcesUnofficial<CR>
 nmap <leader>cfl <ESC>:CodeForcesLoadTask 
 nmap <leader>cfP <ESC>:CodeForcesPageStandings 
+nmap <leader>cfR <ESC>:CodeForcesRoomStandings<CR>
 
 noremap <S-f5>  <ESC>:w<CR><ESC>:CodeForcesSubmit<CR>
 noremap <S-f6>  <ESC>:w<CR><ESC>:CodeForcesUserSubmissions<CR>
