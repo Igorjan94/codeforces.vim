@@ -77,11 +77,17 @@ else:
                 s = ' ' + str(y['rank']) + ' | ' + ', '.join(x['handle'] for x in y['party']['members']) + unof + ' | ' + hacks + '|' + str(int(y['points']))
                 for pr in y['problemResults']:
                     s += ' | '
+                    unsuc = pr['rejectedAttemptCount']
                     if pr['points'] == 0.0:
-                        if pr['rejectedAttemptCount'] != 0:
-                            s += '-' + str(pr['rejectedAttemptCount'])
+                        if unsuc != 0:
+                            s += '-' + str(unsuc)
                     else:
-                        s += str(int(pr['points']))
+                        if x['contest']['type'] == 'ICPC':
+                            s += '+'
+                            if unsuc > 0:
+                                s += str(unsuc)
+                        else:
+                            s += str(int(pr['points']))
                 vim.current.buffer.append(s.encode('utf-8'))
             vim.command("3,$EasyAlign *| {'a':'c'}")
             del vim.current.buffer[0]
@@ -94,7 +100,7 @@ endfunction
 function! CodeForces#CodeForcesFriendsSet() "{{{
     if g:CodeForcesFriends == 0
         let g:CodeForcesFriends = 1
-        let g:CodeForcesFrom = 1
+        let s:CodeForcesFrom = 1
     else
         let g:CodeForcesFriends = 0
     endif
@@ -126,6 +132,7 @@ function! CodeForces#CodeForcesColor() "{{{
     highlight Gray    ctermfg=gray
     highlight Unrated ctermfg=white
 
+    let x = matchadd("Green", ' +')
     let x = matchadd("Green", '+[0-9]')
     let x = matchadd("Green", '+[0-9][0-9]')
     let x = matchadd("Green", ' [0-9][0-9][0-9]')
@@ -335,6 +342,7 @@ vim.current.buffer[0] = index + '.' + vim.current.buffer[0]
 EOF
 :%s/    \n/\r/g
 :%s/\n\n\n/\r/g
+:w
 endfunction
 "}}}
 
