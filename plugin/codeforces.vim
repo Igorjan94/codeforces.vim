@@ -71,7 +71,7 @@ nmap <leader>cfs <ESC>:CodeForcesStandings<CR>
 nmap <leader>cff <ESC>:CodeForcesFriendsSet<CR>
 nmap <leader>cfu <ESC>:CodeForcesUnofficial<CR>
 nmap <leader>cfl <ESC>:CodeForcesLoadTask 
-nmap <leader>cfP <ESC>:CodeForcesPageStandings
+nmap <leader>cfP <ESC>:CodeForcesPageStandings 
 
 noremap <S-f5>  <ESC>:w<CR><ESC>:CodeForcesSubmit<CR>
 noremap <S-f6>  <ESC>:w<CR><ESC>:CodeForcesUserSubmissions<CR>
