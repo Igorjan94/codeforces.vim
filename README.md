@@ -3,7 +3,6 @@
 ## What allows to do
 
 * Watch standings of contests ([Unofficial](http://i.imgur.com/yI5bhBs.png), [Friends](http://i.imgur.com/2o730zV.png), [Official](http://i.imgur.com/avSplri.png), [Room](http://i.imgur.com/nRH64jB.png))
-nmap <leader>cfP <ESC>:CodeForcesPageStandings 
 * Submit source code (thanks to [CountZero](http://codeforces.ru/blog/entry/14786]))
 * Watch result of last user's submissions ([Results](http://i.imgur.com/hDWFJXo.png))
 * Load text of problems ([Russian](http://i.imgur.com/Q5M9fsd.png) | [English](http://i.imgur.com/NAmMBEj.png))
