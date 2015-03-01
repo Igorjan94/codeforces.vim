@@ -174,7 +174,7 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 ## Known <s>bugs</s> features
 
 * It doesn't check any information entered by user
-* <s>10^9 is parsing as 109<s> Done.
+* <s>10^9 is parsing as 109</s> Done.
 * THEY MUST BE, I just haven't found'em
 
 ## Author
