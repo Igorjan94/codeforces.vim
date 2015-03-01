@@ -347,12 +347,15 @@ python << EOF
 import vim
 import requests
 import html2text
+import re
 
 index = vim.eval("a:index").upper()
 contestId = vim.eval("a:contestId")
 vim.command(vim.eval('g:CodeForcesCommandLoadTask') + ' ' + index + '.problem')
 del vim.current.buffer[:]
-vim.current.buffer.append((html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text).split(index + '.')[1].split('[Codeforces]')[0].encode('utf-8').split('\n')))
+#text = re.
+
+vim.current.buffer.append((html2text.html2text(re.sub(r'<sup class="upper-index">(\d+)</sup></span>', r'^\1', requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text)).split(index + '.')[1].split('[Codeforces]')[0].encode('utf-8').split('\n')))
 del vim.current.buffer[0]
 del vim.current.buffer[1:4]
 del vim.current.buffer[2:5]
@@ -362,6 +365,7 @@ EOF
 :%s/    \n/\r/g
 :%s/\n\n\n/\r/g
 :w
+:1
 endfunction
 "}}}
 
