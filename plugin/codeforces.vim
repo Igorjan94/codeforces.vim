@@ -4,7 +4,7 @@
 if exists("g:loaded_cf") || &cp
     finish
 endif
-let g:loaded_cf          = 0.1
+let g:loaded_cf          = 0.2
 let s:keepcpo            = &cpo
 set cpo&vim
 "}}}
@@ -18,6 +18,15 @@ if !exists('g:CodeForcesCommandLoadTask')
 endif
 if !exists('g:CodeForcesCommandSubmission') 
     let g:CodeForcesCommandSubmission= 'tabnew'
+endif
+if !exists('g:CodeForcesContestFormat') 
+    let g:CodeForcesContestFormat  = '/index'
+endif
+if !exists('g:CodeForcesOutput') 
+    let g:CodeForcesOutput         = 'output'
+endif
+if !exists('g:CodeForcesInput') 
+    let g:CodeForcesInput          = 'input'
 endif
 if !exists('g:CodeForcesContestId') 
     let g:CodeForcesContestId      = 0
@@ -62,9 +71,10 @@ command! -nargs=0 CodeForcesSubmit            call CodeForces#CodeForcesSubmit()
 command! -nargs=1 CodeForcesLoadTask          call CodeForces#CodeForcesLoadTask(<q-args>)
 command! -nargs=+ CodeForcesLoadTaskContestId call CodeForces#CodeForcesLoadTaskContestId(<f-args>)
 command! -nargs=0 CodeForcesContestList       call CodeForces#CodeForcesContestList()
+command! -nargs=0 CodeForcesParseContest      call CodeForces#CodeForcesParseContest()
 "}}}
 
- "{{{
+"{{{
 nmap <leader>cfr <ESC>:CodeForcesSetRound 
 nmap <leader>cfS <ESC>:CodeForcesSubmission<CR>
 nmap <leader>cfp <ESC>:CodeForcesPrevStandings<CR>
@@ -76,6 +86,7 @@ nmap <leader>cfl <ESC>:CodeForcesLoadTask
 nmap <leader>cfP <ESC>:CodeForcesPageStandings 
 nmap <leader>cfR <ESC>:CodeForcesRoomStandings<CR>
 nmap <leader>cfcl <ESC>:CodeForcesContestList<CR>
+nmap <leader>cfA <ESC>:CodeForcesParseContest<CR>
 
 noremap <S-f5>  <ESC>:w<CR><ESC>:CodeForcesSubmit<CR>
 noremap <S-f6>  <ESC>:w<CR><ESC>:CodeForcesUserSubmissions<CR>

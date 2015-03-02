@@ -5,3 +5,7 @@ version 0.1:
 * ICPC standings in usual format, command standings (e.g. contest with id 44)
 * Room standings
 * Some minor fixes
+
+version 0.2:
+
+* Parsing of contest

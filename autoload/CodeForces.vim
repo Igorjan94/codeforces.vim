@@ -4,6 +4,154 @@ let s:CodeForcesFrom = 1
 let s:CodeForcesRoom = '0'
 let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.friends'), '\n')[0], '/')[:-2], '/')
 
+"{{{
+python << EOF
+import requests
+import vim
+from HTMLParser import HTMLParser
+
+SAMPLE_INPUT  = vim.eval('g:CodeForcesInput')
+SAMPLE_OUTPUT = vim.eval('g:CodeForcesOutput')
+
+class CodeforcesProblemParser(HTMLParser):
+
+    def __init__(self, folder, needTests, index):
+        HTMLParser.__init__(self)
+        self.folder        = folder
+        self.num_tests     = 0
+        self.testcaseParse = False
+        self.testcase      = None
+        self.start_copy    = False
+        self.test          = ''
+        self.Pparse        = -2
+        self.TMLparse      = 0
+        self.problem       = ''
+        self.pName         = False
+        self.su            = False
+        self.needTests     = needTests
+        self.index         = index
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'div':
+            if attrs == [('class', 'title')]:
+                if self.Pparse == -2:
+                    self.pName = True
+            if attrs == [('class', 'input')]:
+                self.Pparse = -10
+                self.num_tests += 1
+                self.problem += 'Input:\n'
+                self.test = '\n'
+                if self.needTests:
+                    self.testcase = open('%s/%s%s%d' % (self.folder, SAMPLE_INPUT, self.index, self.num_tests), 'w')
+            elif attrs == [('class', 'output')]:
+                self.test = '\n'
+                self.problem += 'Output:\n'
+                if self.needTests:
+                    self.testcase = open('%s/%s%s%d' % (self.folder, SAMPLE_OUTPUT, self.index, self.num_tests), 'w')
+            elif attrs == [('class', 'time-limit')]:
+                self.TMLparse = 2
+                self.problem += 'TL = '
+            elif attrs == [('class', 'memory-limit')]:
+                self.TMLparse = 2
+                self.problem += 'ML = '
+            elif attrs == []:
+                if self.Pparse == 0:
+                    self.Pparse = 1
+
+        elif tag == 'pre':
+            if self.test != '':
+                self.start_copy = True
+        elif tag == 'sub':
+            if attrs == [('class', 'lower-index')]:
+                if self.Pparse > 0:
+                    self.problem += '_'
+                    self.su = True
+        elif tag == 'sup':
+            if attrs == [('class', 'upper-index')]:
+                if self.Pparse > 0:
+                    self.problem += '^'
+                    self.su = True
+
+    def handle_endtag(self, tag):
+        if tag == 'br':
+            if self.start_copy:
+                self.test += '\n'
+                self.end_line = True
+        if tag == 'p' or tag == 'div':
+            if self.Pparse > 0:
+                self.problem += '\n'
+        if tag == 'pre':
+            if self.start_copy:
+                if not self.end_line:
+                    self.test += '\n'
+                self.problem += self.test[1:] + '\n'
+                if self.needTests:
+                    self.testcase.write(self.test)
+                    self.testcase.close()
+                    self.testcase = None
+                    self.test = ''
+                self.start_copy = False
+
+    def handle_entityref(self, name):
+        if self.start_copy:
+            self.test += str(self.unescape(('&%s;' % name)))
+
+    def handle_data(self, data):
+        if self.start_copy:
+            self.test += str(data)
+            self.end_line = False
+        elif self.TMLparse > 0:
+            if self.TMLparse == 1:
+                self.problem += data + '\n'
+                self.Pparse += 1
+            self.TMLparse -= 1
+        elif self.Pparse > 0:
+            if self.su and ('-' in data or '+' in data):
+                data = '(' + data + ')'
+            self.su = False
+            self.problem += str(data)
+        elif self.pName:
+            self.problem += str(data + '\n')
+            self.pName = False
+
+def parse_problem(folder, domain, contest, problem, needTests):
+    url = 'http://codeforces.%s/contest/%s/problem/%s' % (domain, contest, problem)
+    parser = CodeforcesProblemParser(folder, needTests, problem)
+    parser.feed(requests.get(url).text.encode('utf-8'))
+    return parser.problem[:-1]
+EOF
+"}}}
+
+function! CodeForces#CodeForcesParseContest() "{{
+let directory = expand('%:p:h')
+python << EOF
+import vim
+import requests
+import shutil
+import os
+
+contestFormat = vim.eval('g:CodeForcesContestFormat')
+contestId = vim.eval('g:CodeForcesContestId')
+directory = vim.eval('directory')
+template = vim.eval('g:CodeForcesTemplate')
+extension = vim.eval("fnamemodify('" + template + "', ':e')")
+try:
+    problems = [(x['index'], x['name']) for x in requests.get('http://codeforces.%s/api/contest.standings?contestId=%s' % (vim.eval('g:CodeForcesDomain'), str(contestId))).json()['result']['problems']]
+    for (index, name) in problems:
+        folder = directory
+        if contestFormat == '/index':
+            folder += '/' + index
+        print(folder)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        shutil.copyfile(template, folder + '/' + index + '.' + extension)
+        open('/'.join((folder, index + '.problem')), 'w').write(parse_problem(folder, vim.eval('g:CodeForcesDomain'), contestId, index, True))
+except:
+    print(':((')
+EOF
+endfunction
+"}}}
+
 function! CodeForces#CodeForcesNextStandings() "{{{
     let s:CodeForcesFrom = s:CodeForcesFrom + g:CodeForcesCount
     call CodeForces#CodeForcesStandings(g:CodeForcesContestId)
@@ -343,6 +491,7 @@ endfunction
 "}}}
 
 function! CodeForces#CodeForcesLoadTaskContestId(contestId, index) "{{{
+let directory = expand('%:p:h')
 python << EOF
 import vim
 import requests
@@ -351,19 +500,22 @@ import re
 
 index = vim.eval("a:index").upper()
 contestId = vim.eval("a:contestId")
+directory = vim.eval("directory")
 vim.command(vim.eval('g:CodeForcesCommandLoadTask') + ' ' + index + '.problem')
 del vim.current.buffer[:]
-#text = re.
 
-vim.current.buffer.append((html2text.html2text(re.sub(r'<sup class="upper-index">(\d+)</sup></span>', r'^\1', requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text)).split(index + '.')[1].split('[Codeforces]')[0].encode('utf-8').split('\n')))
+vim.current.buffer.append(parse_problem(directory, vim.eval('g:CodeForcesDomain'), contestId, index, False).split('\n'))
 del vim.current.buffer[0]
-del vim.current.buffer[1:4]
-del vim.current.buffer[2:5]
-del vim.current.buffer[3:12]
-vim.current.buffer[0] = index + '.' + vim.current.buffer[0]
+if False:
+    vim.current.buffer.append((html2text.html2text(re.sub(r'<sup class="upper-index">(\d+)</sup></span>', r'^\1', requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text)).split(index + '.')[1].split('[Codeforces]')[0].encode('utf-8').split('\n')))
+    del vim.current.buffer[0]
+    del vim.current.buffer[1:4]
+    del vim.current.buffer[2:5]
+    del vim.current.buffer[3:12]
+    vim.current.buffer[0] = index + '.' + vim.current.buffer[0]
 EOF
-:%s/    \n/\r/g
-:%s/\n\n\n/\r/g
+":%s/    \n/\r/g
+":%s/\n\n\n/\r/g
 :w
 :1
 endfunction
