@@ -161,6 +161,10 @@ Parse contest:
 
 - ` :CodeForcesParseContest `
 
+Test program on samples:
+
+- ` :CodeForcesTest `
+
 ### Bindings
 
 Of course, bind it like you want, I just suggest this:
@@ -176,6 +180,7 @@ Of course, bind it like you want, I just suggest this:
 - ` noremap <leader>cfP <ESC>:CodeForces_P_ageStandings `
 - ` noremap <leader>cfR <ESC>:CodeForces_R_oomStandings `
 - ` noremap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
+- ` noremap <leader>cft <ESC>:CodeForces_T_est `
 
 I think `<S-F5>` very difficult to press ocasionally, so:
 

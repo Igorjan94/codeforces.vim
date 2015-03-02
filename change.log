@@ -9,3 +9,5 @@ version 0.1:
 version 0.2:
 
 * Parsing of contest
+* Running samples
+* Some minor refactoring

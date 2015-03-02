@@ -12,6 +12,32 @@ from HTMLParser import HTMLParser
 
 SAMPLE_INPUT  = vim.eval('g:CodeForcesInput')
 SAMPLE_OUTPUT = vim.eval('g:CodeForcesOutput')
+cf_domain  = vim.eval("g:CodeForcesDomain")
+http = 'http://codeforces.' + cf_domain + '/'
+api = http + "api/"
+csrf_token = vim.eval("g:CodeForcesToken")
+x_user     = vim.eval("g:CodeForcesXUser")
+
+ext_id          =  {
+    "cpp":   "16",
+    "cs":    "9",
+    "c":     "10",
+    "hs":    "12",
+    "java":  "36",
+    "py":    "41",
+    "py2":   "40",
+    "py3":   "41",
+    "d":     "28",
+    "go":    "32",
+    "ml":    "19",
+    "pas":   "4",
+    "dpr":   "3",
+    "pl":    "13",
+    "php":   "6",
+    "rb":    "8",
+    "scala": "20",
+    "js":    "34"
+}
 
 class CodeforcesProblemParser(HTMLParser):
 
@@ -84,12 +110,13 @@ class CodeforcesProblemParser(HTMLParser):
             if self.start_copy:
                 if not self.end_line:
                     self.test += '\n'
-                self.problem += self.test[1:] + '\n'
+                self.test = self.test[1:]
+                self.problem += self.test + '\n'
                 if self.needTests:
                     self.testcase.write(self.test)
                     self.testcase.close()
                     self.testcase = None
-                    self.test = ''
+                self.test = ''
                 self.start_copy = False
 
     def handle_entityref(self, name):
@@ -115,14 +142,14 @@ class CodeforcesProblemParser(HTMLParser):
             self.pName = False
 
 def parse_problem(folder, domain, contest, problem, needTests):
-    url = 'http://codeforces.%s/contest/%s/problem/%s' % (domain, contest, problem)
+    url = http + 'contest/%s/problem/%s' % (contest, problem)
     parser = CodeforcesProblemParser(folder, needTests, problem)
     parser.feed(requests.get(url).text.encode('utf-8'))
     return parser.problem[:-1]
 EOF
 "}}}
 
-function! CodeForces#CodeForcesParseContest() "{{
+function! CodeForces#CodeForcesParseContest() "{{{
 let directory = expand('%:p:h')
 python << EOF
 import vim
@@ -132,20 +159,20 @@ import os
 
 contestFormat = vim.eval('g:CodeForcesContestFormat')
 contestId = vim.eval('g:CodeForcesContestId')
+contest_id = vim.eval('g:CodeForcesContestId')
 directory = vim.eval('directory')
 template = vim.eval('g:CodeForcesTemplate')
 extension = vim.eval("fnamemodify('" + template + "', ':e')")
 try:
-    problems = [(x['index'], x['name']) for x in requests.get('http://codeforces.%s/api/contest.standings?contestId=%s' % (vim.eval('g:CodeForcesDomain'), str(contestId))).json()['result']['problems']]
+    problems = [(x['index'], x['name']) for x in requests.get(http + 'api/contest.standings?contestId=%s' % (contestId)).json()['result']['problems']]
     for (index, name) in problems:
         folder = directory
         if contestFormat == '/index':
             folder += '/' + index
-        print(folder)
         if not os.path.exists(folder):
             os.makedirs(folder)
         shutil.copyfile(template, folder + '/' + index + '.' + extension)
-        open('/'.join((folder, index + '.problem')), 'w').write(parse_problem(folder, vim.eval('g:CodeForcesDomain'), contestId, index, True))
+        open('/'.join((folder, index + '.problem')), 'w').write(parse_problem(folder, cf_domain, contestId, index, True))
 except:
     print(':((')
 EOF
@@ -187,6 +214,7 @@ endfunction
 "}}}
 
 function! CodeForces#CodeForcesStandings(...) "{{{
+"DO NOT TOUCH IT, IT WORKS
 python << EOF
 import vim
 import requests
@@ -196,14 +224,13 @@ if vim.eval("a:0") == '1':
 if vim.eval("g:CodeForcesContestId") == 0:
     print("\"CodeForcesContestId is not set. Add it in .vimrc or just call :CodeForcesStandings <CodeForcesContestId>\"")
 else:
-    api = "http://codeforces." + vim.eval("g:CodeForcesDomain") + "/api/"
     showUnofficial = ''
     friends = ''
     room = ''
     contest_id = vim.eval('g:CodeForcesContestId')
     if vim.eval('s:CodeForcesRoom') != '0':
         try:
-            room = '&room=' + str(requests.get('http://codeforces.ru/api/contest.standings?contestId=' + contest_id + '&handles=' + vim.eval('g:CodeForcesUsername') + '&showUnofficial=true').json()['result']['rows'][0]['party']['room'])
+            room = '&room=' + str(requests.get(api + 'contest.standings?contestId=' + contest_id + '&handles=' + vim.eval('g:CodeForcesUsername') + '&showUnofficial=true').json()['result']['rows'][0]['party']['room'])
         except:
             print('No rooms or smthng else')
     if vim.eval('g:CodeForcesFriends') != '0':
@@ -341,7 +368,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
         submissionId = -1
         submissionLang = ''
         while True:
-            submissions = requests.get('http://codeforces.ru/api/contest.status?contestId=' + vim.eval('g:CodeForcesContestId') + '&handle=' + handle +
+            submissions = requests.get(api + 'contest.status?contestId=' + vim.eval('g:CodeForcesContestId') + '&handle=' + handle +
                 '&from=' + str(i) + '&count=' + str(count)).json()
             if submissions['status'] == 'OK':
                 for submission in submissions['result']:
@@ -368,7 +395,10 @@ if col >= 0 and tasks[col] != '|' and row > 2:
                 submissionExt += 'txt'
             vim.command(vim.eval('g:CodeForcesCommandSubmission') + ' ' + handle + index + submissionExt)
             del vim.current.buffer[:]
-            vim.current.buffer.append((''.join(html2text.html2text(requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text).split('->')[1:]).split('**:')[0].encode('utf-8').split('\n')))
+
+            #TODO: rewrite it
+            vim.current.buffer.append((''.join(html2text.html2text(requests.get(http + 'contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text).split('->')[1:]).split('**:')[0].encode('utf-8').split('\n')))
+
             del vim.current.buffer[0:3]
             del vim.current.buffer[-7:]
             vim.command('1,$<')
@@ -395,7 +425,7 @@ def formatString(s):
 
 while True:
     try:
-        data = requests.get("http://codeforces.ru/api/user.status?handle=" + username + "&from=1&count=" + str(countOfSubmits)).json()['result']
+        data = requests.get(api + "user.status?handle=" + username + "&from=1&count=" + str(countOfSubmits)).json()['result']
     except:
         vim.command('sleep ' + str(updateInterval))
         continue
@@ -423,30 +453,6 @@ contest_id = vim.eval("a:contestId")
 filename   = vim.eval("a:problemIndex")
 extension  = vim.eval("expand(\'%:e\')").lower()
 fullPath   = vim.eval("expand(\'%:p\')")
-cf_domain  = vim.eval("g:CodeForcesDomain")
-csrf_token = vim.eval("g:CodeForcesToken")
-x_user     = vim.eval("g:CodeForcesXUser")
-
-ext_id          =  {
-    "cpp":   "16",
-    "cs":    "9",
-    "c":     "10",
-    "hs":    "12",
-    "java":  "36",
-    "py":    "41",
-    "py2":   "40",
-    "py3":   "41",
-    "d":     "28",
-    "go":    "32",
-    "ml":    "19",
-    "pas":   "4",
-    "dpr":   "3",
-    "pl":    "13",
-    "php":   "6",
-    "rb":    "8",
-    "scala": "20",
-    "js":    "34"
-}
 if not extension in ext_id.keys():
     print("I don't know extension ." + extension + " :(")
 else:
@@ -459,8 +465,11 @@ else:
             "sourceFile":            "",
             "_tta":                  "222"
     }
-    print("you are submitting  " + str(contest_id) + filename + '.' + extension)
-    r = requests.post("http://codeforces." + cf_domain + "/contest/" + contest_id + "/problem/" + filename,
+    print("you are submitting " + str(contest_id) + filename + '.' + extension)
+    typeOfContest = 'contest/'
+    if int(contest_id) > 100000:
+        typeOfContest = 'gym/'
+    r = requests.post(http + typeOfContest + contest_id + "/problem/" + filename,
         params  = {"csrf_token": csrf_token},
         files   = parts,
         cookies = {"X-User": x_user})
@@ -494,30 +503,43 @@ function! CodeForces#CodeForcesLoadTaskContestId(contestId, index) "{{{
 let directory = expand('%:p:h')
 python << EOF
 import vim
-import requests
-import html2text
-import re
 
 index = vim.eval("a:index").upper()
 contestId = vim.eval("a:contestId")
 directory = vim.eval("directory")
 vim.command(vim.eval('g:CodeForcesCommandLoadTask') + ' ' + index + '.problem')
 del vim.current.buffer[:]
-
-vim.current.buffer.append(parse_problem(directory, vim.eval('g:CodeForcesDomain'), contestId, index, False).split('\n'))
+vim.current.buffer.append(parse_problem(directory, cf_domain, contestId, index, False).split('\n'))
 del vim.current.buffer[0]
-if False:
-    vim.current.buffer.append((html2text.html2text(re.sub(r'<sup class="upper-index">(\d+)</sup></span>', r'^\1', requests.get('http://codeforces.' + vim.eval('g:CodeForcesDomain') + '/contest/' + contestId + '/problem/' + index).text)).split(index + '.')[1].split('[Codeforces]')[0].encode('utf-8').split('\n')))
-    del vim.current.buffer[0]
-    del vim.current.buffer[1:4]
-    del vim.current.buffer[2:5]
-    del vim.current.buffer[3:12]
-    vim.current.buffer[0] = index + '.' + vim.current.buffer[0]
 EOF
-":%s/    \n/\r/g
-":%s/\n\n\n/\r/g
 :w
 :1
+endfunction
+"}}}
+
+function! CodeForces#CodeForcesTest() "{{{
+let s:i = 1
+let s:correct = 0
+let s:index = expand('%:r:t')
+:silent make
+while 1 > 0
+    let s:inputfile = g:CodeForcesInput . s:index . s:i
+    if !filereadable(s:inputfile)
+        break
+    endif
+    let s:outputfile = g:CodeForcesOutput . s:index . s:i
+    let s:useroutput = g:CodeForcesUserOutput . s:index . s:i
+    :silent execute ('!./' . s:index . ' < ' . s:inputfile . ' > ' . s:useroutput)
+    let s:diff = system('diff ' . s:outputfile . ' ' . s:useroutput)
+    if s:diff == ''
+        let s:correct += 1
+    else
+        echom 'Test ' . s:i
+        echom s:diff
+    endif
+    let s:i += 1
+endwhile
+echom s:correct . ' / ' . (s:i - 1) . ' correct!'
 endfunction
 "}}}
 
@@ -545,7 +567,7 @@ def color(rating):
     return "Red"
 
 def loadFriends():
-    r = html2text.html2text(requests.post("http://codeforces." + vim.eval('g:CodeForcesDomain') + "/ratings/friends/true", params = {"csrf_token": csrf_token}, cookies = {"X-User": x_user}).text).split('---|---|---|---')[1].split('[Codeforces]')[0].replace('\n', '')
+    r = html2text.html2text(requests.post(http + "ratings/friends/true", params = {"csrf_token": csrf_token}, cookies = {"X-User": x_user}).text).split('---|---|---|---')[1].split('[Codeforces]')[0].replace('\n', '')
     r = re.sub(r'\(.*?\)', '', r)
     r = re.sub(r'\[.*?\]\[', '\n', r)
     for x in r.split('\n')[1:]:
