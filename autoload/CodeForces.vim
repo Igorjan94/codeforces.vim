@@ -117,8 +117,7 @@ class CodeforcesProblemParser(HTMLParser):
 def parse_problem(folder, domain, contest, problem, needTests):
     url = 'http://codeforces.%s/contest/%s/problem/%s' % (domain, contest, problem)
     parser = CodeforcesProblemParser(folder, needTests, problem)
-    parser.feed('\n'.join(open('temp.html', 'r').readlines()))
-#    parser.feed(requests.get(url).text.encode('utf-8'))
+    parser.feed(requests.get(url).text.encode('utf-8'))
     return parser.problem[:-1]
 EOF
 "}}}
