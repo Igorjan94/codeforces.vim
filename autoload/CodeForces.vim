@@ -409,3 +409,71 @@ loadFriends()
 EOF
 endfunction
 "}}}
+
+function! CodeForces#CodeForcesContestList() "{{{
+python << EOF
+import vim
+import requests
+import json
+import re
+
+cf_domain  = vim.eval("g:CodeForcesDomain")
+csrf_token = vim.eval("g:CodeForcesToken")
+x_user     = vim.eval("g:CodeForcesXUser")
+
+response = requests.post('http://codeforces.{}/data/contests'.format(cf_domain),
+                        params = {'csrf_token': csrf_token, 'action': 'getSolvedProblemCountsByContest'},
+                        cookies = {'X-User': x_user})
+if response.status_code == requests.codes.ok:
+    solved_count = response.json()['solvedProblemCountsByContestId']
+    total_count = response.json()['problemCountsByContestId']
+
+del vim.current.buffer[:]
+
+url = 'http://codeforces.com/api/contest.list?gym=false'
+response = requests.get(url).json()
+
+del vim.current.buffer[:]
+
+if response['status'] != 'OK':
+    vim.current.buffer.append('FAIL')
+else:
+    vim.current.buffer.append("CONTEST|ID|PHASE|SOLVED")
+    cnt = 0
+    for contest in response['result']:
+        contest_id = str(contest['id'])
+        if contest['phase'] == 'FINISHED':
+            phase = 'Finished'
+        else:
+            phase = "{}h {}m".format(
+                    contest['relativeTimeSeconds'] / 3600,
+                    (contest['relativeTimeSeconds'] % 3600) / 60)
+
+        if contest_id in solved_count:
+            solved_cnt = solved_count[contest_id]
+            total_cnt = total_count[contest_id]
+            text = "{}|{}|{}|{} / {}".format(contest['name'], contest['id'], phase, solved_cnt, total_cnt)
+        else:
+            contest['name'] = str(contest['name'].encode('utf-8'))
+            text = "{}|{}|{}|0".format(contest['name'], contest['id'], phase)
+        vim.current.buffer.append(text.decode('utf-8'))
+
+        cnt += 1
+        if cnt == 20:
+            break
+    vim.command("1,$EasyAlign *| {'a':'l'}")
+
+    # s = 'let x = matchadd(\"' + color + '\", \"' + handle + '\")'
+    # vim.command(s)
+EOF
+highlight Green ctermfg=green
+match Green /\([0-9]\+\) \/ \1/
+
+highlight keyword cterm=bold cterm=underline
+let x=matchadd('keyword', 'CONTEST')
+let x=matchadd('keyword', 'ID')
+let x=matchadd('keyword', 'PHASE')
+let x=matchadd('keyword', 'SOLVED')
+endfunction
+"}}}
+

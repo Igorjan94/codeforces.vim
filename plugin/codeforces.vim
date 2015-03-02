@@ -61,6 +61,7 @@ command! -nargs=+ CodeForcesSubmitIndexed     call CodeForces#CodeForcesSubmitIn
 command! -nargs=0 CodeForcesSubmit            call CodeForces#CodeForcesSubmit()
 command! -nargs=1 CodeForcesLoadTask          call CodeForces#CodeForcesLoadTask(<q-args>)
 command! -nargs=+ CodeForcesLoadTaskContestId call CodeForces#CodeForcesLoadTaskContestId(<f-args>)
+command! -nargs=0 CodeForcesContestList       call CodeForces#CodeForcesContestList()
 "}}}
 
  "{{{
@@ -74,6 +75,7 @@ nmap <leader>cfu <ESC>:CodeForcesUnofficial<CR>
 nmap <leader>cfl <ESC>:CodeForcesLoadTask 
 nmap <leader>cfP <ESC>:CodeForcesPageStandings 
 nmap <leader>cfR <ESC>:CodeForcesRoomStandings<CR>
+nmap <leader>cfcl <ESC>:CodeForcesContestList<CR>
 
 noremap <S-f5>  <ESC>:w<CR><ESC>:CodeForcesSubmit<CR>
 noremap <S-f6>  <ESC>:w<CR><ESC>:CodeForcesUserSubmissions<CR>
