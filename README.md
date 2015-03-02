@@ -165,6 +165,10 @@ Test program on samples:
 
 - ` :CodeForcesTest `
 
+Get list of contests:
+
+- ` :CodeForcesContestList `
+
 ### Bindings
 
 Of course, bind it like you want, I just suggest this:
@@ -181,6 +185,7 @@ Of course, bind it like you want, I just suggest this:
 - ` noremap <leader>cfR <ESC>:CodeForces_R_oomStandings `
 - ` noremap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
 - ` noremap <leader>cft <ESC>:CodeForces_T_est `
+- ` noremap <leader>cfcl <ESC>:CodeForces_C_ontest_L_ist<CR>
 
 I think `<S-F5>` very difficult to press ocasionally, so:
 
@@ -213,10 +218,15 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 * <s>10^9 is parsing as 109</s> Done.
 * THEY MUST BE, I just haven't found'em
 
-## Author
+## Authors
 
 Igor Kolobov, aka Igorjan94
 
-My cf:      Igorjan94  
-My mail:    Igorjan94@{mail.ru, gmail.com}  
-My github:  Igorjan94  
+cf:      Igorjan94  
+mail:    Igorjan94@{mail.ru, gmail.com}  
+github:  Igorjan94  
+
+Trung Nguyen
+
+cf:      I_love_Hoang_Yen
+github:  ngthanhtrung23

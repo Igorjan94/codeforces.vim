@@ -543,6 +543,7 @@ echom s:correct . ' / ' . (s:i - 1) . ' correct!'
 endfunction
 "}}}
 
+"get friends not working "{{{
 python << EOF
 import vim
 import requests
@@ -575,6 +576,7 @@ def loadFriends():
         if len(y) >= 2:
             print(y[0][:-2] + ' ' + color(int(y[2].replace(' ', ''))))
 EOF
+"}}}
 
 function! CodeForces#CodeForcesSetColors() "{{{
 python << EOF
@@ -589,24 +591,17 @@ python << EOF
 import vim
 import requests
 import json
-import re
 
-cf_domain  = vim.eval("g:CodeForcesDomain")
-csrf_token = vim.eval("g:CodeForcesToken")
-x_user     = vim.eval("g:CodeForcesXUser")
-
-response = requests.post('http://codeforces.{}/data/contests'.format(cf_domain),
+response = requests.post(http + 'data/contests',
                         params = {'csrf_token': csrf_token, 'action': 'getSolvedProblemCountsByContest'},
                         cookies = {'X-User': x_user})
 if response.status_code == requests.codes.ok:
     solved_count = response.json()['solvedProblemCountsByContestId']
     total_count = response.json()['problemCountsByContestId']
 
-del vim.current.buffer[:]
-
-url = 'http://codeforces.com/api/contest.list?gym=false'
+url = api + 'contest.list?gym=false'
 response = requests.get(url).json()
-
+vim.command('tabnew ' + vim.eval('s:CodeForcesPrefix') + '.contestList')
 del vim.current.buffer[:]
 
 if response['status'] != 'OK':
@@ -636,7 +631,7 @@ else:
         if cnt == 20:
             break
     vim.command("1,$EasyAlign *| {'a':'l'}")
-
+    del vim.current.buffer[0]
     # s = 'let x = matchadd(\"' + color + '\", \"' + handle + '\")'
     # vim.command(s)
 EOF
