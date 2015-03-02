@@ -73,6 +73,7 @@ command! -nargs=+ CodeForcesSubmitIndexed     call CodeForces#CodeForcesSubmitIn
 command! -nargs=0 CodeForcesSubmit            call CodeForces#CodeForcesSubmit()
 command! -nargs=1 CodeForcesLoadTask          call CodeForces#CodeForcesLoadTask(<q-args>)
 command! -nargs=+ CodeForcesLoadTaskContestId call CodeForces#CodeForcesLoadTaskContestId(<f-args>)
+command! -nargs=0 CodeForcesContestList       call CodeForces#CodeForcesContestList()
 command! -nargs=0 CodeForcesParseContest      call CodeForces#CodeForcesParseContest()
 command! -nargs=0 CodeForcesTest              call CodeForces#CodeForcesTest()
 "}}}
@@ -88,6 +89,7 @@ nmap <leader>cfu <ESC>:CodeForcesUnofficial<CR>
 nmap <leader>cfl <ESC>:CodeForcesLoadTask 
 nmap <leader>cfP <ESC>:CodeForcesPageStandings 
 nmap <leader>cfR <ESC>:CodeForcesRoomStandings<CR>
+nmap <leader>cfcl <ESC>:CodeForcesContestList<CR>
 nmap <leader>cfA <ESC>:CodeForcesParseContest<CR>
 nmap <leader>cft <ESC>:CodeForcesTest<CR>
 
