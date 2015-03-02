@@ -601,7 +601,7 @@ if response.status_code == requests.codes.ok:
 
 url = api + 'contest.list?gym=false'
 response = requests.get(url).json()
-vim.command('tabnew ' + vim.eval('s:CodeForcesPrefix') + '.contestList')
+vim.command('tabnew ' + vim.eval('s:CodeForcesPrefix') + '/codeforces.contestList')
 del vim.current.buffer[:]
 
 if response['status'] != 'OK':
