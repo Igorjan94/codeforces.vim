@@ -95,6 +95,9 @@ set filename to user-output (default 'my_output'):
 
 - `let g:CodeForcesUserOutput = 'myCorrectOutput'`
 
+template file to copy in directory with samples/problem statement:
+
+- `let g:CodeForcesTemplate = '/some/long/path/to/template.cpp'
 
 ### Functions
 
