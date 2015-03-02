@@ -122,23 +122,29 @@ def parse_problem(folder, domain, contest, problem, needTests):
 EOF
 "}}}
 
-function! CodeForces#CodeForcesParseContest() "{{{
+function! CodeForces#CodeForcesParseContest() "{{
 let directory = expand('%:p:h')
 python << EOF
 import vim
 import requests
-from subprocess import call
+import shutil
+import os
 
 contestFormat = vim.eval('g:CodeForcesContestFormat')
 contestId = vim.eval('g:CodeForcesContestId')
 directory = vim.eval('directory')
+template = vim.eval('g:CodeForcesTemplate')
+extension = vim.eval("fnamemodify('" + template + "', ':e')")
 try:
-    problems = [(x['index'], x['name']) for x in requests.get('http://codeforces.%s/api/contest.standings?contestId=%s' % (vim.eval('g:CodeForcesDomain'), --str(contestId))).json()['result']['problems']]
+    problems = [(x['index'], x['name']) for x in requests.get('http://codeforces.%s/api/contest.standings?contestId=%s' % (vim.eval('g:CodeForcesDomain'), str(contestId))).json()['result']['problems']]
     for (index, name) in problems:
         folder = directory
         if contestFormat == '/index':
             folder += '/' + index
-        call(['mkdir', '-p', folder])
+        print(folder)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        shutil.copyfile(template, folder + '/' + index + '.' + extension)
         open('/'.join((folder, index + '.problem')), 'w').write(parse_problem(folder, vim.eval('g:CodeForcesDomain'), contestId, index, True))
 except:
     print(':((')
