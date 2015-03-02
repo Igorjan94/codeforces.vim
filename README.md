@@ -12,7 +12,7 @@
 
 * Full coloring of standings (I tested it on 10k users, it runs veryveryvery slow. So, I leave it as it is or, please, say how to do it in other way)
 * <s>Room standings</s> Done
-* Parsing sapmles automatic testing like (C|J)Helper does
+* Parsing sapmles and automatic testing like (C|J)Helper does. In progress...
 * Deleting unused code, local uncludes (C++)
 * <s>Change `tabnew` to user-defined command</s> Done.
 * ...
@@ -74,6 +74,28 @@ set your handle:
 
 - `let g:CodeForcesUsername = 'Igorjan94'`
 
+there is (now) two formats of parsing contest:
+
+* `/index` (default) format: directory/{index}/{{index}.{ext}, {index}.problem, input{index}.in, output{index}.out}, where {index} = A, B ...
+* smthng else format: all files in one directory
+
+set contest format to second one:
+
+- `let g:CodeForcesContestFormat = 'smthngelse'`
+
+set filename to sample-input (default 'input'):
+
+- `let g:CodeForcesInput = 'sampleInput'`
+
+set filename to sample-output (default 'output'):
+
+- `let g:CodeForcesOutput = 'sampleOutput'`
+
+set filename to user-output (default 'my_output'):
+
+- `let g:CodeForcesUserOutput = 'myCorrectOutput'`
+
+
 ### Functions
 
 Next standings page:
@@ -116,21 +138,25 @@ Get last submissions:
 
 - ` :CodeForcesUserSubmissions `
 
-Submit opened file as problem B1 to 513 round
+Submit opened file as problem B1 to 513 round:
 
 - ` :CodeForcesSubmitIndexed 513 B1 `
 
-Submit opened file as B1.cpp to `g:CodeForcesContestId` round
+Submit opened file as B1.cpp to `g:CodeForcesContestId` round:
 
 - ` :CodeForcesSubmit `
 
-Load problem B from `g:CodeForcesContestId`
+Load problem B from `g:CodeForcesContestId`:
 
 - ` :CodeForcesLoadTask B `
 
-Load problem B from contest 510
+Load problem B from contest 510:
 
 - ` :CodeForcesLoadTaskContestId 510 B `
+
+Parse contest:
+
+- ` :CodeForcesParseContest `
 
 ### Bindings
 
@@ -146,6 +172,7 @@ Of course, bind it like you want, I just suggest this:
 - ` noremap <leader>cfl <ESC>:CodeForces_L_oadTask `
 - ` noremap <leader>cfP <ESC>:CodeForces_P_ageStandings `
 - ` noremap <leader>cfR <ESC>:CodeForces_R_oomStandings `
+- ` noremap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
 
 I think `<S-F5>` very difficult to press ocasionally, so:
 
@@ -167,8 +194,9 @@ Just go to rating.friends page and copy friends in format `rank (rank) handle co
 ## Dependencies
 
 * Python
-  * requests  (all network)
-  * html2text (loadProblem, loadSubmission)
+  * requests   (all network)
+  * html2text  (loadSubmission)
+  * HTMLparser (loadProblem) 
 * [EasyAlign](https://github.com/junegunn/vim-easy-align) for beautiful standings 
 
 ## Known <s>bugs</s> features
