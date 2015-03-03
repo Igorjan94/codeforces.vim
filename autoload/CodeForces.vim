@@ -39,6 +39,31 @@ ext_id          =  {
     "js":    "34"
 }
 
+class CodeforcesSubmissionParser(HTMLParser):
+
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.parsing = False
+        self.submission = ''
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'pre':
+            for (x, y) in attrs:
+                if x == 'class' and y == 'prettyprint':
+                    self.parsing = True
+
+    def handle_endtag(self, tag):
+        if tag == 'pre' and self.parsing:
+            self.parsing = False
+    
+    def handle_data(self, data):
+        if self.parsing:
+            self.submission += str(data.encode('utf-8'))
+
+    def handle_entityref(self, name):
+        if self.parsing:
+            self.submission += str(self.unescape(('&%s;' % name)))
+    
 class CodeforcesProblemParser(HTMLParser):
 
     def __init__(self, folder, needTests, index):
@@ -392,12 +417,11 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             vim.command(vim.eval('g:CodeForcesCommandSubmission') + ' ' + handle + index + submissionExt)
             del vim.current.buffer[:]
 
-            #TODO: rewrite it
-            vim.current.buffer.append((''.join(html2text.html2text(requests.get(http + 'contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text).split('->')[1:]).split('**:')[0].encode('utf-8').split('\n')))
+            parser = CodeforcesSubmissionParser()
+            parser.feed(requests.get(http + 'contest/' + vim.eval('g:CodeForcesContestId') + '/submission/' + str(submissionId)).text)
+            vim.current.buffer.append(parser.submission.decode('utf-8').split('\n'))
 
-            del vim.current.buffer[0:3]
-            del vim.current.buffer[-7:]
-            vim.command('1,$<')
+            del vim.current.buffer[0]
             vim.command('%s/\r//g')
             vim.command('w')
 EOF
