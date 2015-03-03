@@ -26,6 +26,14 @@
 
 all variables and functions have name with prefix 'CodeForces'
 
+## Dependencies
+
+* Python
+  * requests   (all network)
+  * html2text  (loadSubmission)
+  * HTMLparser (loadProblem) 
+* [EasyAlign](https://github.com/junegunn/vim-easy-align) for beautiful standings 
+
 ### Variables
 
 set count of users on one page to 40(default 30):
@@ -203,14 +211,6 @@ Format: `handle Color`
 
 `codeforces.friends`
 Just go to rating.friends page and copy friends in format `rank (rank) handle contestNumber rating`
-
-## Dependencies
-
-* Python
-  * requests   (all network)
-  * html2text  (loadSubmission)
-  * HTMLparser (loadProblem) 
-* [EasyAlign](https://github.com/junegunn/vim-easy-align) for beautiful standings 
 
 ## Known <s>bugs</s> features
 
