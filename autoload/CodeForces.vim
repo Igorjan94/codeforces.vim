@@ -45,73 +45,75 @@ class CodeforcesProblemParser(HTMLParser):
         HTMLParser.__init__(self)
         self.folder        = folder
         self.num_tests     = 0
-        self.testcaseParse = False
         self.testcase      = None
-        self.start_copy    = False
+        self.ps            = -1
         self.test          = ''
-        self.Pparse        = -2
-        self.TMLparse      = 0
         self.problem       = ''
-        self.pName         = False
         self.su            = False
         self.needTests     = needTests
         self.index         = index
+        self.start_copy    = False
 
     def handle_starttag(self, tag, attrs):
         if tag == 'div':
-            if attrs == [('class', 'title')]:
-                if self.Pparse == -2:
-                    self.pName = True
-            if attrs == [('class', 'input')]:
-                self.Pparse = -10
+            if self.ps > 0:
+                self.ps += 1
+            if attrs == [('class', 'problem-statement')]:
+                self.ps = 1
+            elif attrs == [('class', 'input')]:
                 self.num_tests += 1
-                self.problem += 'Input:\n'
                 self.test = '\n'
                 if self.needTests:
                     self.testcase = open('%s/%s%s%d' % (self.folder, SAMPLE_INPUT, self.index, self.num_tests), 'w')
             elif attrs == [('class', 'output')]:
                 self.test = '\n'
-                self.problem += 'Output:\n'
                 if self.needTests:
                     self.testcase = open('%s/%s%s%d' % (self.folder, SAMPLE_OUTPUT, self.index, self.num_tests), 'w')
-            elif attrs == [('class', 'time-limit')]:
-                self.TMLparse = 2
-                self.problem += 'TL = '
-            elif attrs == [('class', 'memory-limit')]:
-                self.TMLparse = 2
-                self.problem += 'ML = '
-            elif attrs == []:
-                if self.Pparse == 0:
-                    self.Pparse = 1
-
+            elif attrs == [('class', 'sample-tests')]:
+                if self.ps > 0:
+                    self.problem += '\n'
+        elif tag == 'p':
+            if self.ps > 0:
+                self.problem += '\n'
         elif tag == 'pre':
             if self.test != '':
                 self.start_copy = True
         elif tag == 'sub':
             if attrs == [('class', 'lower-index')]:
-                if self.Pparse > 0:
+                if self.ps > 0:
                     self.problem += '_'
                     self.su = True
         elif tag == 'sup':
             if attrs == [('class', 'upper-index')]:
-                if self.Pparse > 0:
+                if self.ps > 0:
                     self.problem += '^'
                     self.su = True
 
+    def handle_startendtag(self, tag, attrs):
+        if tag == 'img':
+            if self.ps > 0:
+                for (x, y) in attrs:
+                    if x == 'src':
+                        self.problem += str(y)
+        else:
+            self.handle_starttag(tag, attrs)
+            self.handle_endtag(tag)
+
     def handle_endtag(self, tag):
+        if (tag == 'br' or tag == 'div' or tag == 'pre') and self.ps > 0:
+            self.problem += '\n'
         if tag == 'br':
             if self.start_copy:
                 self.test += '\n'
                 self.end_line = True
-        if tag == 'p' or tag == 'div':
-            if self.Pparse > 0:
-                self.problem += '\n'
+        if tag == 'div':
+            if self.ps > 0:
+                self.ps -= 1
         if tag == 'pre':
             if self.start_copy:
                 if not self.end_line:
                     self.test += '\n'
                 self.test = self.test[1:]
-                self.problem += self.test + '\n'
                 if self.needTests:
                     self.testcase.write(self.test)
                     self.testcase.close()
@@ -122,26 +124,18 @@ class CodeforcesProblemParser(HTMLParser):
     def handle_entityref(self, name):
         if self.start_copy:
             self.test += str(self.unescape(('&%s;' % name)))
-        elif self.Pparse > 0:
+        elif self.ps > 0:
             self.problem += str(self.unescape(('&%s;' % name)))
 
     def handle_data(self, data):
         if self.start_copy:
             self.test += str(data)
             self.end_line = False
-        elif self.TMLparse > 0:
-            if self.TMLparse == 1:
-                self.problem += data + '\n'
-                self.Pparse += 1
-            self.TMLparse -= 1
-        elif self.Pparse > 0:
-            if self.su and ('-' in data or '+' in data):
+        if self.ps > 0:
+            if self.su and ('-' in data or '+' in data or '*' in data or '/' in data):
                 data = '(' + data + ')'
             self.su = False
             self.problem += str(data)
-        elif self.pName:
-            self.problem += str(data + '\n')
-            self.pName = False
 
 def parse_problem(folder, domain, contest, problem, needTests):
     url = http + 'contest/%s/problem/%s' % (contest, problem)
@@ -514,6 +508,8 @@ del vim.current.buffer[:]
 vim.current.buffer.append(parse_problem(directory, cf_domain, contestId, index, False).split('\n'))
 del vim.current.buffer[0]
 EOF
+:%s/\n\n\n/\r\r/g
+:%s/\n\n\n/\r\r/g
 :w
 :1
 endfunction
