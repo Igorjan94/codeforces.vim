@@ -122,6 +122,8 @@ class CodeforcesProblemParser(HTMLParser):
     def handle_entityref(self, name):
         if self.start_copy:
             self.test += str(self.unescape(('&%s;' % name)))
+        elif self.Pparse > 0:
+            self.problem += str(self.unescape(('&%s;' % name)))
 
     def handle_data(self, data):
         if self.start_copy:
