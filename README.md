@@ -195,9 +195,9 @@ Of course, bind it like you want, I just suggest this:
 - ` nmap <leader>cfP <ESC>:CodeForces_P_ageStandings `
 - ` nmap <leader>cfR <ESC>:CodeForces_R_oomStandings `
 - ` nmap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
-- ` nmap <leader>cft <ESC>:CodeForces_T_est `
-- ` nmap <leader>cfcl <ESC>:CodeForces_C_ontest_L_ist<CR>
-- ` nmap <leader>cfF <ESC>:CodeForcesLoad_F_riends<CR>
+- ` nmap <leader>cft <ESC>:CodeForces_T_est`
+- ` nmap <leader>cfcl <ESC>:CodeForces_C_ontest_L_ist<CR>`
+- ` nmap <leader>cfF <ESC>:CodeForcesLoad_F_riends<CR>`
 
 I think `<S-F5>` very difficult to press ocasionally, so:
 
