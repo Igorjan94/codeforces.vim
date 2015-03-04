@@ -30,7 +30,7 @@ all variables and functions have name with prefix 'CodeForces'
 
 * Python
   * requests   (all network)
-  * HTMLparser (loadProblem) 
+  * HTMLparser (loadProblem, loadSubmission, loadFriends) 
 * [EasyAlign](https://github.com/junegunn/vim-easy-align) for beautiful standings 
 
 ### Variables
@@ -229,5 +229,5 @@ github:  Igorjan94
 
 Trung Nguyen
 
-cf:      I_love_Hoang_Yen
+cf:      I_love_Hoang_Yen  
 github:  ngthanhtrung23
