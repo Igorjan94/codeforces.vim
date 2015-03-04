@@ -10,6 +10,7 @@ import requests
 import vim
 import shutil
 import re
+import os
 from HTMLParser import HTMLParser
 
 SAMPLE_INPUT   = vim.eval('g:CodeForcesInput')
@@ -49,7 +50,8 @@ ext_id          =  {
     'js':    '34'
 }
 
-class CodeforcesSubmissionParser(HTMLParser):
+# CFSP {{{
+class CodeForcesSubmissionParser(HTMLParser):
 
     def __init__(self):
         HTMLParser.__init__(self)
@@ -73,8 +75,11 @@ class CodeforcesSubmissionParser(HTMLParser):
     def handle_entityref(self, name):
         if self.parsing:
             self.submission += self.unescape(('&%s;' % name))
-    
-class CodeforcesProblemParser(HTMLParser):
+
+#}}} 
+
+# CFPP {{{
+class CodeForcesProblemParser(HTMLParser):
 
     def __init__(self, folder, needTests, index):
         HTMLParser.__init__(self)
@@ -129,7 +134,7 @@ class CodeforcesProblemParser(HTMLParser):
             if self.ps > 0:
                 for (x, y) in attrs:
                     if x == 'src':
-                        self.problem += str(y)
+                        self.problem += y.decode('utf-8')
         else:
             self.handle_starttag(tag, attrs)
             self.handle_endtag(tag)
@@ -158,9 +163,9 @@ class CodeforcesProblemParser(HTMLParser):
 
     def handle_entityref(self, name):
         if self.start_copy:
-            self.test += str(self.unescape(('&%s;' % name)))
+            self.test += self.unescape(('&%s;' % name))
         elif self.ps > 0:
-            self.problem += str(self.unescape(('&%s;' % name)))
+            self.problem += self.unescape(('&%s;' % name))
 
     def handle_data(self, data):
         if self.start_copy:
@@ -171,12 +176,85 @@ class CodeforcesProblemParser(HTMLParser):
                 data = '(' + data + ')'
             self.su = False
             self.problem += data.decode('utf-8')
+#}}}
+
+# CFFP {{{
+class CodeForcesFriendsParser(HTMLParser):
+
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.parsing = -1
+        self.friends = ''
+        self.ok = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'div':
+            if self.parsing > 0:
+                self.parsing += 1
+            try:
+                (x, y) = attrs[0]
+                if x == 'class' and y == 'datatable':
+                    self.parsing = 1
+            except:
+                42
+        if tag == 'td':
+            if self.parsing > 0:
+                self.ok = True 
+
+    def handle_endtag(self, tag):
+        if tag == 'div':
+            if self.parsing > 0:
+                self.parsing -= 1
+        if tag == 'td':
+            if self.parsing > 0:
+                self.ok = False
+    
+    def handle_data(self, data):
+        if self.ok:
+            self.friends += data.decode('utf-8')
+
+    def handle_entityref(self, name):
+        if self.ok:
+            self.friends += self.unescape(('&%s;' % name))
+#}}}
 
 def parse_problem(folder, domain, contest, problem, needTests):
     url = http + 'contest/%s/problem/%s' % (contest, problem)
-    parser = CodeforcesProblemParser(folder, needTests, problem)
+    parser = CodeForcesProblemParser(folder, needTests, problem)
     parser.feed(requests.get(url).text.encode('utf-8'))
-    return parser.problem[:-1]
+    return parser.problem[:-1].encode('utf-8')
+
+def color(rating):
+    if rating == 0:
+        return 'Unrated'
+    if rating < 1200:
+        return 'Gray'
+    if rating < 1500:
+        return 'Green'
+    if rating < 1700:
+        return 'Blue'
+    if rating < 1900:
+        return 'Purple'
+    if rating < 2200:
+        return 'Yellow'
+    return 'Red'
+
+def loadFriends():
+    r = requests.post(http + 'ratings/friends/true', params = {'csrf_token': csrf_token}, cookies = {'X-User': x_user}).text.encode('utf-8')
+    parser = CodeForcesFriendsParser()
+    parser.feed(r)
+    friends = parser.friends.encode('utf-8')
+    friends = re.sub(r'(\s*\n\s*)+', '\n', friends)
+    friends = re.sub(r'^(\s*\n\s*)+', '', friends)
+    counter = 0
+    fileFriends = open(prefix + '/codeforces.friends', 'w')
+    for x in friends.split('\n'):
+        if counter % 4 == 1:
+            fileFriends.write(x + '\n')
+        counter += 1
+
+def getProblems(contestId):
+    return [(x['index'], x['name']) for x in requests.get(api + 'contest.standings?contestId=%s' % (contestId)).json()['result']['problems']]
 EOF
 "}}}
 
@@ -186,18 +264,15 @@ python << EOF
 
 directory = vim.eval('directory')
 extension = vim.eval("fnamemodify('" + template + "', ':e')")
-try:
-    problems = [(x['index'], x['name']) for x in requests.get(http + 'api/contest.standings?contestId=%s' % (contestId)).json()['result']['problems']]
-    for (index, name) in problems:
-        folder = directory
-        if contestFormat == '/index':
-            folder += '/' + index
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-        shutil.copyfile(template, folder + '/' + index + '.' + extension)
-        open('/'.join((folder, index + '.problem')), 'w').write(parse_problem(folder, cf_domain, contestId, index, True))
-except:
-    print(':((')
+problems = getProblems(contestId)
+for (index, name) in problems:
+    folder = directory
+    if contestFormat == '/index':
+        folder += '/' + index
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    shutil.copyfile(template, folder + '/' + index + '.' + extension)
+    open('/'.join((folder, index + '.problem')), 'w').write(parse_problem(folder, cf_domain, contestId, index, True))
 EOF
 endfunction
 "}}}
@@ -413,7 +488,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             vim.command(vim.eval('g:CodeForcesCommandSubmission') + ' ' + handle + index + submissionExt)
             del vim.current.buffer[:]
 
-            parser = CodeforcesSubmissionParser()
+            parser = CodeForcesSubmissionParser()
             parser.feed(requests.get(http + 'contest/' + contestId + '/submission/' + str(submissionId)).text.encode('utf-8'))
             vim.current.buffer.append(parser.submission.encode('utf-8').split('\n'))
 
@@ -550,78 +625,6 @@ echom s:correct . ' / ' . (s:i - 1) . ' correct!'
 endfunction
 "}}}
 
-"get friends working "{{{
-python << EOF
-
-def color(rating):
-    if rating == 0:
-        return 'Unrated'
-    if rating < 1200:
-        return 'Gray'
-    if rating < 1500:
-        return 'Green'
-    if rating < 1700:
-        return 'Blue'
-    if rating < 1900:
-        return 'Purple'
-    if rating < 2200:
-        return 'Yellow'
-    return 'Red'
-
-class CodeforcesFriendsParser(HTMLParser):
-
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.parsing = -1
-        self.friends = ''
-        self.ok = False
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'div':
-            if self.parsing > 0:
-                self.parsing += 1
-            try:
-                (x, y) = attrs[0]
-                if x == 'class' and y == 'datatable':
-                    self.parsing = 1
-            except:
-                42
-        if tag == 'td':
-            if self.parsing > 0:
-                self.ok = True 
-
-    def handle_endtag(self, tag):
-        if tag == 'div':
-            if self.parsing > 0:
-                self.parsing -= 1
-        if tag == 'td':
-            if self.parsing > 0:
-                self.ok = False
-    
-    def handle_data(self, data):
-        if self.ok:
-            self.friends += data.decode('utf-8')
-
-    def handle_entityref(self, name):
-        if self.ok:
-            self.friends += self.unescape(('&%s;' % name))
-
-def loadFriends():
-    r = requests.post(http + 'ratings/friends/true', params = {'csrf_token': csrf_token}, cookies = {'X-User': x_user}).text.encode('utf-8')
-    parser = CodeforcesFriendsParser()
-    parser.feed(r)
-    friends = parser.friends.encode('utf-8')
-    friends = re.sub(r'(\s*\n\s*)+', '\n', friends)
-    friends = re.sub(r'^(\s*\n\s*)+', '', friends)
-    counter = 0
-    fileFriends = open(prefix + '/codeforces.friends', 'w')
-    for x in friends.split('\n'):
-        if counter % 4 == 1:
-            fileFriends.write(x + '\n')
-        counter += 1
-EOF
-"}}}
-
 function! CodeForces#CodeForcesLoadFriends() "{{{
 py loadFriends()
 endfunction
@@ -684,3 +687,19 @@ let x=matchadd('keyword', 'SOLVED')
 endfunction
 "}}}
 
+function! CodeForces#CodeForcesOpenContest()
+python << EOF
+try:
+    problems = getProblems(contestId)
+    (x, y) = problems[0]
+    vim.command('cd ' + x)
+    for (x, y) in problems:
+        vim.command('tabnew ../' + x + '/' + x + '.problem')
+        vim.command('cd %:p:h')
+        vim.command('vsplit ' + x + '.cpp')
+    vim.command('tabnext')
+    vim.command('q')
+except Exception, e:
+    print(e)
+EOF
+endfunction
