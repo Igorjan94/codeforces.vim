@@ -30,7 +30,6 @@ all variables and functions have name with prefix 'CodeForces'
 
 * Python
   * requests   (all network)
-  * html2text  (loadSubmission)
   * HTMLparser (loadProblem) 
 * [EasyAlign](https://github.com/junegunn/vim-easy-align) for beautiful standings 
 
@@ -125,6 +124,10 @@ Get standings 518 (if contestId is not set, then `g:CodeForcesContestId`):
 
 - ` :CodeForcesStandings 518 `
 
+Get friends (needs XUser and JSession):
+
+- ` :CodeForcesLoadFriends `
+
 Show friends if not shown and vice versa:
 
 - ` :CodeForcesFriendsSet `
@@ -149,11 +152,11 @@ Get last submissions:
 
 - ` :CodeForcesUserSubmissions `
 
-Submit opened file as problem B1 to 513 round:
+Submit opened file as problem B1 to 513 round (needs XUser and JSession):
 
 - ` :CodeForcesSubmitIndexed 513 B1 `
 
-Submit opened file as B1.cpp to `g:CodeForcesContestId` round:
+Submit opened file to `g:CodeForcesContestId` round (needs XUser and JSession):
 
 - ` :CodeForcesSubmit `
 
@@ -173,7 +176,7 @@ Test program on samples:
 
 - ` :CodeForcesTest `
 
-Get list of contests:
+Get list of contests (needs XUser and JSession):
 
 - ` :CodeForcesContestList `
 
@@ -181,19 +184,20 @@ Get list of contests:
 
 Of course, bind it like you want, I just suggest this:
 
-- ` noremap <leader>cfr <ESC>:CodeForcesSet_R_ound `
-- ` noremap <leader>cfS <ESC>:CodeForces_S_ubmission<CR>`
-- ` noremap <leader>cfp <ESC>:CodeForces_P_revStandings<CR>`
-- ` noremap <leader>cfn <ESC>:CodeForces_N_extStandings<CR>`
-- ` noremap <leader>cfs <ESC>:CodeForces_S_tandings<CR>`
-- ` noremap <leader>cff <ESC>:CodeForces_F_riendsSet<CR>`
-- ` noremap <leader>cfu <ESC>:CodeForces_U_nofficial<CR>`
-- ` noremap <leader>cfl <ESC>:CodeForces_L_oadTask `
-- ` noremap <leader>cfP <ESC>:CodeForces_P_ageStandings `
-- ` noremap <leader>cfR <ESC>:CodeForces_R_oomStandings `
-- ` noremap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
-- ` noremap <leader>cft <ESC>:CodeForces_T_est `
-- ` noremap <leader>cfcl <ESC>:CodeForces_C_ontest_L_ist<CR>
+- ` nmap <leader>cfr <ESC>:CodeForcesSet_R_ound `
+- ` nmap <leader>cfS <ESC>:CodeForces_S_ubmission<CR>`
+- ` nmap <leader>cfp <ESC>:CodeForces_P_revStandings<CR>`
+- ` nmap <leader>cfn <ESC>:CodeForces_N_extStandings<CR>`
+- ` nmap <leader>cfs <ESC>:CodeForces_S_tandings<CR>`
+- ` nmap <leader>cff <ESC>:CodeForces_F_riendsSet<CR>`
+- ` nmap <leader>cfu <ESC>:CodeForces_U_nofficial<CR>`
+- ` nmap <leader>cfl <ESC>:CodeForces_L_oadTask `
+- ` nmap <leader>cfP <ESC>:CodeForces_P_ageStandings `
+- ` nmap <leader>cfR <ESC>:CodeForces_R_oomStandings `
+- ` nmap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
+- ` nmap <leader>cft <ESC>:CodeForces_T_est `
+- ` nmap <leader>cfcl <ESC>:CodeForces_C_ontest_L_ist<CR>
+- ` nmap <leader>cfF <ESC>:CodeForcesLoad_F_riends<CR>
 
 I think `<S-F5>` very difficult to press ocasionally, so:
 
@@ -209,13 +213,10 @@ Folder CF:
 Format: `handle Color`  
 `Color = { Red, Yellow, Purple, Blue, Green, Gray, Unrated }`
 
-`codeforces.friends`
-Just go to rating.friends page and copy friends in format `rank (rank) handle contestNumber rating`
 
 ## Known <s>bugs</s> features
 
 * It doesn't check any information entered by user
-* <s>10^9 is parsing as 109</s> Done.
 * THEY MUST BE, I just haven't found'em
 
 ## Authors
