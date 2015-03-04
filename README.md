@@ -104,7 +104,7 @@ set filename to user-output (default 'my_output'):
 
 template file to copy in directory with samples/problem statement:
 
-- `let g:CodeForcesTemplate = '/some/long/path/to/template.cpp'
+- `let g:CodeForcesTemplate = '/some/long/path/to/template.cpp`
 
 ### Functions
 
