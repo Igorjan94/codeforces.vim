@@ -11,6 +11,8 @@ import vim
 import shutil
 import re
 import os
+import time
+from time import sleep
 from HTMLParser import HTMLParser
 
 SAMPLE_INPUT   = vim.eval('g:CodeForcesInput')
@@ -50,6 +52,14 @@ ext_id          =  {
     'js':    '34'
 }
 
+def entity2char(x):
+    if x.startswith('&#x'):
+        return chr(int(x[3:-1],16))
+    elif x.startswith('&#'):
+        return chr(int(x[2:-1]))   
+    else:
+        return chr(int(x))
+
 # CFSP {{{
 class CodeForcesSubmissionParser(HTMLParser):
 
@@ -68,6 +78,10 @@ class CodeForcesSubmissionParser(HTMLParser):
         if tag == 'pre' and self.parsing:
             self.parsing = False
     
+    def handle_charref(self, name):
+        if self.parsing:
+            self.submission += entity2char(name)
+
     def handle_data(self, data):
         if self.parsing:
             self.submission += data.decode('utf-8')
@@ -167,6 +181,12 @@ class CodeForcesProblemParser(HTMLParser):
         elif self.ps > 0:
             self.problem += self.unescape(('&%s;' % name))
 
+    def handle_charref(self, name):
+        if self.start_copy:
+            self.test += entity2char(name)
+        elif self.ps > 0:
+            self.problem += entity2char(name)
+
     def handle_data(self, data):
         if self.start_copy:
             self.test += data.decode('utf-8')
@@ -216,6 +236,10 @@ class CodeForcesFriendsParser(HTMLParser):
     def handle_entityref(self, name):
         if self.ok:
             self.friends += self.unescape(('&%s;' % name))
+
+    def handle_charref(self, name):
+        if self.ok:
+            self.friends += entity2char(name)
 #}}}
 
 def parse_problem(folder, domain, contest, problem, needTests):
@@ -687,7 +711,7 @@ let x=matchadd('keyword', 'SOLVED')
 endfunction
 "}}}
 
-function! CodeForces#CodeForcesOpenContest()
+function! CodeForces#CodeForcesOpenContest() "{{{
 python << EOF
 try:
     problems = getProblems(contestId)
@@ -697,9 +721,13 @@ try:
         vim.command('tabnew ../' + x + '/' + x + '.problem')
         vim.command('cd %:p:h')
         vim.command('vsplit ' + x + '.cpp')
+        vim.command('75')
+    vim.command('CodeForcesStandings')
     vim.command('tabnext')
     vim.command('q')
+    vim.command('cd %:p:h')
 except Exception, e:
     print(e)
 EOF
 endfunction
+"}}}
