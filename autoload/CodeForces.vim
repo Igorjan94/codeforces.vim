@@ -680,6 +680,7 @@ else:
             phase = 'Finished'
         else:
             time = contest['relativeTimeSeconds']
+            phase = ''
             if time < 0:
                 phase = '-'
                 time = -time
