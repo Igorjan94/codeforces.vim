@@ -76,6 +76,7 @@ command! -nargs=+ CodeForcesLoadTaskContestId call CodeForces#CodeForcesLoadTask
 command! -nargs=0 CodeForcesContestList       call CodeForces#CodeForcesContestList()
 command! -nargs=0 CodeForcesParseContest      call CodeForces#CodeForcesParseContest()
 command! -nargs=0 CodeForcesTest              call CodeForces#CodeForcesTest()
+command! -nargs=0 CodeForcesLoadFriends       call CodeForces#CodeForcesLoadFriends()
 "}}}
 
 "{{{
@@ -92,6 +93,7 @@ nmap <leader>cfR <ESC>:CodeForcesRoomStandings<CR>
 nmap <leader>cfcl <ESC>:CodeForcesContestList<CR>
 nmap <leader>cfA <ESC>:CodeForcesParseContest<CR>
 nmap <leader>cft <ESC>:CodeForcesTest<CR>
+nmap <leader>cfF <ESC>:CodeForcesLoadFriends<CR>
 
 noremap <S-f5>  <ESC>:w<CR><ESC>:CodeForcesSubmit<CR>
 noremap <S-f6>  <ESC>:w<CR><ESC>:CodeForcesUserSubmissions<CR>
