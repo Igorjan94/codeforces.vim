@@ -679,9 +679,11 @@ else:
         if contest['phase'] == 'FINISHED':
             phase = 'Finished'
         else:
-            phase = '{}h {}m'.format(
-                    contest['relativeTimeSeconds'] / 3600,
-                    (contest['relativeTimeSeconds'] % 3600) / 60)
+            time = contest['relativeTimeSeconds']
+            if time < 0:
+                phase = '-'
+                time = -time
+            phase += '{}h {}m'.format(time / 3600, (time % 3600) / 60)
 
         if contestId in solved_count:
             solved_cnt = solved_count[contestId]
