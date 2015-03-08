@@ -3,6 +3,8 @@
 let s:CodeForcesFrom = 1
 let s:CodeForcesRoom = '0'
 let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.users'), '\n')[0], '/')[:-2], '/')
+let s:CodeForcesContestListFrom = 0
+let s:CodeForcesContestListPage = 100
 
 "{{{
 python << EOF
@@ -313,6 +315,21 @@ function! CodeForces#CodeForcesPrevStandings() "{{{
         let s:CodeForcesFrom = 1
     endif
     call CodeForces#CodeForcesStandings(g:CodeForcesContestId)
+endfunction
+"}}}
+
+function! CodeForces#CodeForcesContestListNext() "{{{
+    let s:CodeForcesContestListFrom = s:CodeForcesContestListFrom + s:CodeForcesContestListPage
+    call CodeForces#CodeForcesContestList()
+endfunction
+"}}}
+
+function! CodeForces#CodeForcesContestListPrev() "{{{
+    let s:CodeForcesContestListFrom = s:CodeForcesContestListFrom - s:CodeForcesContestListPage
+    if s:CodeForcesContestListFrom < 0
+        let s:CodeForcesContestListFrom = 0
+    endif
+    call CodeForces#CodeForcesContestList()
 endfunction
 "}}}
 
@@ -666,40 +683,40 @@ if response.status_code == requests.codes.ok:
 
 url = api + 'contest.list?gym=false'
 response = requests.get(url).json()
-vim.command('tabnew ' + prefix + '/codeforces.contestList')
 del vim.current.buffer[:]
+if vim.eval("expand('%:e')").lower() != 'contestlist':
+    vim.command('tabnew ' + prefix + '/codeforces.contestList')
 
 if response['status'] != 'OK':
     vim.current.buffer.append('FAIL')
 else:
     vim.current.buffer.append('CONTEST|ID|PHASE|SOLVED')
     cnt = 0
+    contest_from = int(vim.eval('s:CodeForcesContestListFrom'))
+    contest_to = int(vim.eval('s:CodeForcesContestListFrom + s:CodeForcesContestListPage'))
     for contest in response['result']:
-        contestId = str(contest['id'])
-        if contest['phase'] == 'FINISHED':
-            phase = 'Finished'
-        else:
-            time = contest['relativeTimeSeconds']
-            phase = ''
-            if time < 0:
-                phase = '-'
-                time = -time
-            phase += '{}h {}m'.format(time / 3600, (time % 3600) / 60)
+        if cnt >= contest_from:
+            contestId = str(contest['id'])
+            if contest['phase'] == 'FINISHED':
+                phase = 'Finished'
+            else:
+                time = -contest['relativeTimeSeconds']
+                phase = '{}h {}m'.format(time / 3600, (time % 3600) / 60)
 
-        if contestId in solved_count:
-            solved_cnt = solved_count[contestId]
-            total_cnt = total_count[contestId]
-            text = '{}|{}|{}|{} / {}'.format(contest['name'], contest['id'], phase, solved_cnt, total_cnt)
-        else:
-            contest['name'] = str(contest['name'].encode('utf-8'))
-            text = '{}|{}|{}|0'.format(contest['name'], contest['id'], phase)
-        vim.current.buffer.append(text.decode('utf-8'))
-
+            if contestId in solved_count:
+                solved_cnt = solved_count[contestId]
+                total_cnt = total_count[contestId]
+                text = '{}|{}|{}|{} / {}'.format(contest['name'], contest['id'], phase, solved_cnt, total_cnt)
+            else:
+                contest['name'] = str(contest['name'].encode('utf-8'))
+                text = '{}|{}|{}|0'.format(contest['name'], contest['id'], phase)
+            vim.current.buffer.append(text.decode('utf-8'))
         cnt += 1
-        if cnt == 20:
+        if cnt >= contest_to:
             break
     vim.command("1,$EasyAlign *| {'a':'l'}")
-    del vim.current.buffer[0]
+    if vim.current.buffer[0] == '':
+        del vim.current.buffer[0]
     # s = 'let x = matchadd(\"' + color + '\", \"' + handle + '\")'
     # vim.command(s)
 EOF
