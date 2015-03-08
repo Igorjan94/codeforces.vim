@@ -683,9 +683,9 @@ if response.status_code == requests.codes.ok:
 
 url = api + 'contest.list?gym=false'
 response = requests.get(url).json()
-del vim.current.buffer[:]
 if vim.eval("expand('%:e')").lower() != 'contestlist':
     vim.command('tabnew ' + prefix + '/codeforces.contestList')
+del vim.current.buffer[:]
 
 if response['status'] != 'OK':
     vim.current.buffer.append('FAIL')
@@ -702,14 +702,13 @@ else:
             else:
                 time = -contest['relativeTimeSeconds']
                 phase = '{}h {}m'.format(time / 3600, (time % 3600) / 60)
-
+            contest['name'] = (contest['name'].encode('utf-8'))
             if contestId in solved_count:
                 solved_cnt = solved_count[contestId]
                 total_cnt = total_count[contestId]
-                text = '{}|{}|{}|{} / {}'.format(contest['name'], contest['id'], phase, solved_cnt, total_cnt)
+                text = '{}|{}|{}|{} / {}'.format(contest['name'], contestId, phase, solved_cnt, total_cnt)
             else:
-                contest['name'] = str(contest['name'].encode('utf-8'))
-                text = '{}|{}|{}|0'.format(contest['name'], contest['id'], phase)
+                text = '{}|{}|{}|0'.format(contest['name'], contestId, phase)
             vim.current.buffer.append(text.decode('utf-8'))
         cnt += 1
         if cnt >= contest_to:
