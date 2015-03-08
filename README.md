@@ -179,6 +179,8 @@ Test program on samples:
 Get list of contests (needs XUser and JSession):
 
 - ` :CodeForcesContestList `
+- ` :CodeForcesContestListNext `
+- ` :CodeForcesContestListPrev `
 
 ### Bindings
 
@@ -197,6 +199,8 @@ Of course, bind it like you want, I just suggest this:
 - ` nmap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
 - ` nmap <leader>cft <ESC>:CodeForces_T_est`
 - ` nmap <leader>cfcl <ESC>:CodeForces_C_ontest_L_ist<CR>`
+- ` nmap <leader>cfcn <ESC>:CodeForces_C_ontestList_N_ext<CR>`
+- ` nmap <leader>cfcp <ESC>:CodeForces_C_ontestList_P_rev<CR>`
 - ` nmap <leader>cfF <ESC>:CodeForcesLoad_F_riends<CR>`
 
 I think `<S-F5>` very difficult to press ocasionally, so:
