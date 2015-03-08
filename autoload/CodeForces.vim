@@ -700,9 +700,8 @@ else:
             if contest['phase'] == 'FINISHED':
                 phase = 'Finished'
             else:
-                phase = '{}h {}m'.format(
-                        contest['relativeTimeSeconds'] / 3600,
-                        (contest['relativeTimeSeconds'] % 3600) / 60)
+                time = -contest['relativeTimeSeconds']
+                phase = '{}h {}m'.format(time / 3600, (time % 3600) / 60)
 
             if contestId in solved_count:
                 solved_cnt = solved_count[contestId]
@@ -712,7 +711,6 @@ else:
                 contest['name'] = str(contest['name'].encode('utf-8'))
                 text = '{}|{}|{}|0'.format(contest['name'], contest['id'], phase)
             vim.current.buffer.append(text.decode('utf-8'))
-
         cnt += 1
         if cnt >= contest_to:
             break
