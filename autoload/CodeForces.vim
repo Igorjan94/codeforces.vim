@@ -530,7 +530,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             del vim.current.buffer[:]
 
             parser = CodeForcesSubmissionParser()
-            parser.feed(requests.get(http + 'contest/' + contestId + '/submission/' + str(submissionId)).text.encode('utf-8').replace('&#39;', "'"))
+            parser.feed(requests.get(http + 'contest/' + contestId + '/submission/' + str(submissionId)).text.encode('utf-8'))
             vim.current.buffer.append(parser.submission.encode('utf-8').split('\n'))
 
             del vim.current.buffer[0]
