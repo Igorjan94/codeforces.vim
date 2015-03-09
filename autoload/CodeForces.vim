@@ -120,10 +120,12 @@ class CodeForcesProblemParser(HTMLParser):
                 self.num_tests += 1
                 self.test = '\n'
                 if self.needTests:
+                    vim.command('echom "Get input: {} {}"'.format(self.index, self.num_tests))
                     self.testcase = open('%s/%s%s%d' % (self.folder, SAMPLE_INPUT, self.index, self.num_tests), 'w')
             elif attrs == [('class', 'output')]:
                 self.test = '\n'
                 if self.needTests:
+                    vim.command('echom "Get output: {} {}"'.format(self.index, self.num_tests))
                     self.testcase = open('%s/%s%s%d' % (self.folder, SAMPLE_OUTPUT, self.index, self.num_tests), 'w')
             elif attrs == [('class', 'sample-tests')]:
                 if self.ps > 0:
@@ -286,12 +288,14 @@ EOF
 
 function! CodeForces#CodeForcesParseContest() "{{{
 let directory = expand('%:p:h')
+echom 'Parsing contest'
 python << EOF
 
 directory = vim.eval('directory')
 extension = vim.eval("fnamemodify('" + template + "', ':e')")
 problems = getProblems(contestId)
 for (index, name) in problems:
+    vim.command('echom "Parsing problem: {}"'.format(index))
     folder = directory
     if contestFormat == '/index':
         folder += '/' + index
