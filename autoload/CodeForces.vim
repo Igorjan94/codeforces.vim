@@ -14,6 +14,7 @@ import shutil
 import re
 import os
 import time
+import threading
 from time import sleep
 from HTMLParser import HTMLParser
 
@@ -291,6 +292,11 @@ let directory = expand('%:p:h')
 echom 'Parsing contest'
 python << EOF
 
+def parse(folder, cf_domain, contestId, index, flag):
+    print('here')
+    parsed = parse_problem(folder, cf_domain, contestId, index, True)
+    open('/'.join((folder, index + '.problem')), 'w').write(parsed)
+
 directory = vim.eval('directory')
 extension = vim.eval("fnamemodify('" + template + "', ':e')")
 problems = getProblems(contestId)
@@ -302,7 +308,8 @@ for (index, name) in problems:
     if not os.path.exists(folder):
         os.makedirs(folder)
     shutil.copyfile(template, folder + '/' + index + '.' + extension)
-    open('/'.join((folder, index + '.problem')), 'w').write(parse_problem(folder, cf_domain, contestId, index, True))
+    download = threading.Thread(target=parse, args=(folder, cf_domain, contestId, index, True))
+    download.start()
 EOF
 endfunction
 "}}}
