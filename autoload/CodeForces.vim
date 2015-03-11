@@ -505,13 +505,14 @@ if col >= 0 and tasks[col] != '|' and row > 2:
         col -= len(submissions[i]) + 1
         i += 1
     if i != -1:
-        handle = handle.replace(' ', '')
+        handle = handle.replace(' ', '').split(',')[0]
         index = vim.current.buffer[1].split('|', 4)[4].split('|')[i].split('(')[0].replace(' ', '')
-        count = 20
+        count = 200
         i = 1
         submissionId = -1
         submissionLang = ''
         while True:
+            vim.command("echom 'searching submission'")
             submissions = requests.get(api + 'contest.status?contestId=' + contestId + '&handle=' + handle +
                 '&from=' + str(i) + '&count=' + str(count)).json()
             if submissions['status'] == 'OK':
@@ -523,13 +524,15 @@ if col >= 0 and tasks[col] != '|' and row > 2:
                 if len(submissions) == 0 or submissionId != -1:
                     break
                 i += count
+            if i > 1000:
+                break
         if submissionId != -1:
             submissionExt = '.'
             if 'C++' in submissionLang:
                 submissionExt += 'cpp'
             elif 'Java' in submissionLang:
                 submissionExt += 'java'
-            elif 'ython' in submissionLang:
+            elif 'py' in submissionLang.lower():
                 submissionExt += 'py'
             elif 'Pas' in submissionLang:
                 submissionExt += 'pas'
