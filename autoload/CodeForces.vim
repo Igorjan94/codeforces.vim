@@ -391,7 +391,7 @@ else:
         del vim.current.buffer[:]
         x = requests.post(url, params = params, cookies = cookies).json()
         if x['status'] != 'OK':
-            vim.current.buffer.append('FAIL')
+            vim.current.buffer.append('FAIL IN API, try again later')
         else:
             x = x['result']
             contestName = x['contest']['name']
@@ -474,13 +474,9 @@ function! CodeForces#CodeForcesColor() "{{{
     highlight Unrated ctermfg=white
 
     let x = matchadd('Green', ' +')
-    let x = matchadd('Green', '+[0-9]')
-    let x = matchadd('Green', '+[0-9][0-9]')
-    let x = matchadd('Green', ' [0-9][0-9][0-9]')
-    let x = matchadd('Green', ' [0-9][0-9][0-9][0-9]')
-    let x = matchadd('Green', ' [0-9][0-9][0-9][0-9][0-9]')
-    let x = matchadd('Red', '-[0-9]')
-    let x = matchadd('Red', '-[0-9][0-9]')
+    let x = matchadd('Green', ' +[0-9]\+')
+    let x = matchadd('Green', ' [0-9][0-9][0-9]\+')
+    let x = matchadd('Red', ' -[0-9]\+')
 python << EOF
 users = open(prefix + '/codeforces.users', 'r')
 for user in users:
@@ -584,7 +580,7 @@ endfunction
 function! CodeForces#CodeForcesSubmitIndexed(contestId, problemIndex) "{{{
 python << EOF
 
-contestId = vim.eval('a:contestId')
+contestId  = vim.eval('a:contestId')
 filename   = vim.eval('a:problemIndex')
 extension  = vim.eval("expand('%:e')").lower()
 fullPath   = vim.eval("expand('%:p')")
@@ -701,7 +697,7 @@ if vim.eval("expand('%:e')").lower() != 'contestlist':
 del vim.current.buffer[:]
 
 if response['status'] != 'OK':
-    vim.current.buffer.append('FAIL')
+    vim.current.buffer.append('FAIL IN API, try again later')
 else:
     vim.current.buffer.append('CONTEST|ID|PHASE|SOLVED')
     cnt = 0
