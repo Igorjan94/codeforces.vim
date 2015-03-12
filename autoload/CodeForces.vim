@@ -371,26 +371,25 @@ if vim.eval('a:0') == '1':
 if vim.eval('g:CodeForcesContestId') == 0:
     print('CodeForcesContestId is not set. Add it in .vimrc or just call :CodeForcesStandings <CodeForcesContestId>')
 else:
-    showUnofficial = ''
-    friends = ''
-    room = ''
     contestId = vim.eval('g:CodeForcesContestId')
+    params = {'handles' : '', 'room' : '', 'showUnofficial' : '', 'from' : vim.eval('s:CodeForcesFrom'), 'count' : countSt, 'contestId' : contestId, 'csrf_token': csrf_token}
+    cookies = {'X-User' : x_user}
     if vim.eval('s:CodeForcesRoom') != '0':
         try:
-            room = '&room=' + str(requests.get(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true').json()['result']['rows'][0]['party']['room'])
+            params['room'] = str(requests.get(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true').json()['result']['rows'][0]['party']['room'])
         except:
             print('No rooms or smthng else')
     if vim.eval('g:CodeForcesFriends') != '0':
-        friends = '&handles=' + ';'.join(x[:-1] for x in open(prefix + '/codeforces.friends', 'r').readlines())
+        params['handles'] = ';'.join(x[:-1] for x in open(prefix + '/codeforces.friends', 'r').readlines())
     if vim.eval('g:CodeForcesShowUnofficial') != '0':
-        showUnofficial = '&showUnofficial=true'
-    url = api + 'contest.standings?contestId=' + contestId + '&from=' + vim.eval('s:CodeForcesFrom') + '&count=' + countSt + showUnofficial + friends + room
+        params['showUnofficial'] = 'true'
+    url = api + 'contest.standings'
     try:
         if vim.eval("expand('%:e')").lower() != 'standings':
             vim.command(vim.eval('g:CodeForcesCommandStandings') + ' ' + prefix + '/codeforces.standings')
             vim.command('call CodeForces#CodeForcesColor()')
         del vim.current.buffer[:]
-        x = requests.get(url).json()
+        x = requests.post(url, params = params, cookies = cookies).json()
         if x['status'] != 'OK':
             vim.current.buffer.append('FAIL')
         else:
