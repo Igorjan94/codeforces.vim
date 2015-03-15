@@ -5,6 +5,8 @@ let s:CodeForcesRoom = '0'
 let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.users'), '\n')[0], '/')[:-2], '/')
 let s:CodeForcesContestListFrom = 0
 let s:CodeForcesContestListPage = 100
+let s:CodeForcesStatus = 'INIT'
+let s:CodeForcesStatusChanged = 1
 
 "{{{
 python << EOF
@@ -33,6 +35,7 @@ updateInterval = vim.eval('g:CodeForcesUpdateInterval')
 countOfSubmits = vim.eval('g:CodeForcesCountOfSubmits')
 http           = 'http://codeforces.' + cf_domain + '/'
 api            = http + 'api/'
+phase          = 0
 
 ext_id          =  {
     'cpp':   '16',
@@ -391,9 +394,19 @@ else:
         del vim.current.buffer[:]
         x = requests.post(url, params = params, cookies = cookies).json()
         if x['status'] != 'OK':
-            vim.current.buffer.append('FAIL IN API, try again later')
+            vim.current.buffer.append('FAIL, ' + x['comment'])
         else:
             x = x['result']
+            st = x['contest']['phase']
+            if st == 'SYSTEM_TEST':
+                phase = 1
+            else:
+                phase = 0
+            if st != vim.eval('s:CodeForcesStatus'):
+                vim.command('let s:CodeForcesStatusChanged = 1')
+            else:
+                vim.command('let s:CodeForcesStatusChanged = 0')
+            vim.command("let s:CodeForcesStatus = '" + st + "'")
             contestName = x['contest']['name']
             problems = 'N|Party|Hacks|Score'
             for problem in x['problems']:
@@ -419,8 +432,11 @@ else:
                     s += ' | '
                     unsuc = pr['rejectedAttemptCount']
                     if pr['points'] == 0.0:
-                        if unsuc != 0:
-                            s += '-' + str(unsuc)
+                        if pr['type'] == 'PRELIMINARY' and phase == 1:
+                            s += '?'
+                        else:
+                            if unsuc != 0:
+                                s += '-' + str(unsuc)
                     else:
                         if x['contest']['type'] == 'ICPC':
                             s += '+'
@@ -434,6 +450,9 @@ else:
     except Exception, e:
         print e
 EOF
+if s:CodeForcesStatusChanged == 1
+    call CodeForces#CodeForcesColor()
+endif
 endfunction
 "}}}
 
@@ -472,10 +491,13 @@ function! CodeForces#CodeForcesColor() "{{{
     highlight Green   ctermfg=green
     highlight Gray    ctermfg=gray
     highlight Unrated ctermfg=white
-
-    let x = matchadd('Green', ' +')
-    let x = matchadd('Green', ' +[0-9]\+')
-    let x = matchadd('Green', ' [0-9][0-9][0-9]\+')
+    let color = 'Green'
+    if s:CodeForcesStatus != 'FINISHED'
+        let color = 'Blue'
+    endif
+    let x = matchadd(color, ' +')
+    let x = matchadd(color, ' +[0-9]\+')
+    let x = matchadd(color, ' [0-9][0-9][0-9]\+')
     let x = matchadd('Red', ' -[0-9]\+')
 python << EOF
 users = open(prefix + '/codeforces.users', 'r')
@@ -697,7 +719,7 @@ if vim.eval("expand('%:e')").lower() != 'contestlist':
 del vim.current.buffer[:]
 
 if response['status'] != 'OK':
-    vim.current.buffer.append('FAIL IN API, try again later')
+    vim.current.buffer.append('FAIL, ' + response['comment'])
 else:
     vim.current.buffer.append('CONTEST|ID|PHASE|SOLVED')
     cnt = 0
