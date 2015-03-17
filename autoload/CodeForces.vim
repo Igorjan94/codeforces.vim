@@ -5,7 +5,7 @@ let s:CodeForcesRoom = '0'
 let s:CodeForcesPrefix = '/'.join(split(split(globpath(&rtp, 'CF/*.users'), '\n')[0], '/')[:-2], '/')
 let s:CodeForcesContestListFrom = 0
 let s:CodeForcesContestListPage = 100
-let s:CodeForcesStatus = 'INIT'
+let s:CodeForcesStatus = 'FINISHED'
 let s:CodeForcesStatusChanged = 1
 
 "{{{
@@ -541,7 +541,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
                 if len(submissions) == 0 or submissionId != -1:
                     break
                 i += count
-            if i > 1000:
+            if i >= 200:
                 break
         if submissionId != -1:
             submissionExt = '.'
