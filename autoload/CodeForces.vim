@@ -33,9 +33,14 @@ username       = vim.eval('g:CodeForcesUsername')
 countSt        = vim.eval('g:CodeForcesCount')
 updateInterval = vim.eval('g:CodeForcesUpdateInterval')
 countOfSubmits = vim.eval('g:CodeForcesCountOfSubmits')
+cookies        = {'X-User' : x_user}
+csrf_token_p   = {'csrf_token' : csrf_token}
 http           = 'http://codeforces.' + cf_domain + '/'
 api            = http + 'api/'
 phase          = 0
+typeOfContest  = 'contest/'
+if int(contestId) > 100000:
+    typeOfContest = 'gym/'
 
 ext_id          =  {
     'cpp':   '16',
@@ -55,7 +60,8 @@ ext_id          =  {
     'php':   '6',
     'rb':    '8',
     'scala': '20',
-    'js':    '34'
+    'js':    '34',
+    'pi':    '44'
 }
 
 def entity2char(x):
@@ -253,7 +259,7 @@ class CodeForcesFriendsParser(HTMLParser):
 def parse_problem(folder, domain, contest, problem, needTests):
     url = http + 'contest/%s/problem/%s' % (contest, problem)
     parser = CodeForcesProblemParser(folder, needTests, problem)
-    parser.feed(requests.get(url).text.encode('utf-8'))
+    parser.feed(requests.post(url, cookies = cookies, params = csrf_token_p).text.encode('utf-8'))
     return parser.problem[:-1].encode('utf-8')
 
 def color(rating):
@@ -272,7 +278,7 @@ def color(rating):
     return 'Red'
 
 def loadFriends():
-    r = requests.post(http + 'ratings/friends/true', params = {'csrf_token': csrf_token}, cookies = {'X-User': x_user}).text.encode('utf-8')
+    r = requests.post(http + 'ratings/friends/true', params = csrf_token_p, cookies = cookies).text.encode('utf-8')
     parser = CodeForcesFriendsParser()
     parser.feed(r)
     friends = parser.friends.encode('utf-8')
@@ -286,7 +292,7 @@ def loadFriends():
         counter += 1
 
 def getProblems(contestId):
-    return [(x['index'], x['name']) for x in requests.get(api + 'contest.standings?contestId=%s' % (contestId)).json()['result']['problems']]
+    return [(x['index'], x['name']) for x in requests.post(api + 'contest.standings?contestId=%s' % (contestId), cookies = cookies, params = csrf_token_p).json()['result']['problems']]
 EOF
 "}}}
 
@@ -376,10 +382,9 @@ if vim.eval('g:CodeForcesContestId') == 0:
 else:
     contestId = vim.eval('g:CodeForcesContestId')
     params = {'handles' : '', 'room' : '', 'showUnofficial' : '', 'from' : vim.eval('s:CodeForcesFrom'), 'count' : countSt, 'contestId' : contestId, 'csrf_token': csrf_token}
-    cookies = {'X-User' : x_user}
     if vim.eval('s:CodeForcesRoom') != '0':
         try:
-            params['room'] = str(requests.get(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true').json()['result']['rows'][0]['party']['room'])
+            params['room'] = str(requests.post(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true', cookies = cookies, params = csrf_token_p).json()['result']['rows'][0]['party']['room'])
         except:
             print('No rooms or smthng else')
     if vim.eval('g:CodeForcesFriends') != '0':
@@ -479,7 +484,12 @@ endfunction
 
 function! CodeForces#CodeForcesSetRound(id) "{{{
     let g:CodeForcesContestId = a:id
-    py contestId = vim.eval('g:CodeForcesContestId')
+python << EOF
+contestId = vim.eval('g:CodeForcesContestId')
+typeOfContest  = 'contest/'
+if int(contestId) > 100000:
+    typeOfContest = 'gym/'
+EOF
 endfunction
 "}}}
 
@@ -530,8 +540,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
         submissionLang = ''
         while True:
             vim.command("echom 'searching submission'")
-            submissions = requests.get(api + 'contest.status?contestId=' + contestId + '&handle=' + handle +
-                '&from=' + str(i) + '&count=' + str(count)).json()
+            submissions = requests.post(api + 'contest.status?contestId=' + contestId + '&handle=' + handle + '&from=' + str(i) + '&count=' + str(count), cookies = cookies, params = csrf_token_p).json()
             if submissions['status'] == 'OK':
                 for submission in submissions['result']:
                     if submission['problem']['index'] == index:
@@ -561,7 +570,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             del vim.current.buffer[:]
 
             parser = CodeForcesSubmissionParser()
-            parser.feed(requests.get(http + 'contest/' + contestId + '/submission/' + str(submissionId)).text.encode('utf-8'))
+            parser.feed(requests.post(http + typeOfContest + contestId + '/submission/' + str(submissionId), cookies = cookies, params = csrf_token_p).text.encode('utf-8'))
             vim.current.buffer.append(parser.submission.encode('utf-8').split('\n'))
 
             del vim.current.buffer[0]
@@ -619,13 +628,10 @@ else:
             '_tta':                  '222'
     }
     print('you are submitting ' + str(contestId) + filename + '.' + extension)
-    typeOfContest = 'contest/'
-    if int(contestId) > 100000:
-        typeOfContest = 'gym/'
     r = requests.post(http + typeOfContest + contestId + '/problem/' + filename,
-        params  = {'csrf_token': csrf_token},
+        params  = csrf_token_p,
         files   = parts,
-        cookies = {'X-User': x_user})
+        cookies = cookies)
     print(r)
     if r.status_code == requests.codes.ok:
         print('Solution is successfully sent. Current time is ' + time.strftime('%H:%M:%S'))
@@ -707,7 +713,7 @@ python << EOF
 
 response = requests.post(http + 'data/contests',
                         params = {'csrf_token': csrf_token, 'action': 'getSolvedProblemCountsByContest'},
-                        cookies = {'X-User': x_user})
+                        cookies = cookies)
 if response.status_code == requests.codes.ok:
     solved_count = response.json()['solvedProblemCountsByContestId']
     total_count = response.json()['problemCountsByContestId']
@@ -731,7 +737,9 @@ else:
             if contest['phase'] == 'FINISHED':
                 phase = 'Finished'
             else:
-                time = -contest['relativeTimeSeconds']
+                time = contest['relativeTimeSeconds']
+                if contest['phase'] == 'BEFORE':
+                    time = -time
                 phase = '{}h {}m'.format(time / 3600, (time % 3600) / 60)
             contest['name'] = (contest['name'].encode('utf-8'))
             if contestId in solved_count:
