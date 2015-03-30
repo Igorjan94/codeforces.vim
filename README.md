@@ -221,6 +221,7 @@ Format: `handle Color`
 ## Known <s>bugs</s> features
 
 * It doesn't check any information entered by user
+* Submission for teams doesn't work
 * THEY MUST BE, I just haven't found'em
 
 ## Authors
