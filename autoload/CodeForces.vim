@@ -388,7 +388,12 @@ else:
         except:
             print('No rooms or smthng else')
     if vim.eval('g:CodeForcesFriends') != '0':
-        params['handles'] = ';'.join(x[:-1] for x in open(prefix + '/codeforces.friends', 'r').readlines())
+        try:
+            f = open(prefix + '/codeforces.friends', 'r')
+        except:
+            loadFriends()
+            f = open(prefix + '/codeforces.friends', 'r')
+        params['handles'] = ';'.join(x[:-1] for x in f.readlines())
     if vim.eval('g:CodeForcesShowUnofficial') != '0':
         params['showUnofficial'] = 'true'
     url = api + 'contest.standings'
