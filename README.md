@@ -164,9 +164,13 @@ Load problem B from `g:CodeForcesContestId`:
 
 - ` :CodeForcesLoadTask B `
 
-Load problem B from contest 510:
+Load problem B from `g:CodeForcesContestId` with parsing tests:
 
-- ` :CodeForcesLoadTaskContestId 510 B `
+- ` :CodeForcesLoadTaskWithTests B `
+
+Load problem B from contest 510 with/without tests:
+
+- ` :CodeForcesLoadTaskContestId 510 B True/False `
 
 Parse contest:
 

@@ -654,20 +654,26 @@ endfunction
 "}}}
 
 function! CodeForces#CodeForcesLoadTask(index) "{{{
-call CodeForces#CodeForcesLoadTaskContestId(g:CodeForcesContestId, a:index)
+call CodeForces#CodeForcesLoadTaskContestId(g:CodeForcesContestId, a:index, 'False')
 endfunction
 "}}}
 
-function! CodeForces#CodeForcesLoadTaskContestId(contestId, index) "{{{
+function! CodeForces#CodeForcesLoadTaskWithTests(index) "{{{
+call CodeForces#CodeForcesLoadTaskContestId(g:CodeForcesContestId, a:index, 'True')
+endfunction
+"}}}
+
+function! CodeForces#CodeForcesLoadTaskContestId(contestId, index, tests) "{{{
 let directory = expand('%:p:h')
 python << EOF
 
 index = vim.eval('a:index').upper()
 contestId = vim.eval('a:contestId')
 directory = vim.eval('directory')
+needTests = vim.eval('a:tests')
 vim.command(vim.eval('g:CodeForcesCommandLoadTask') + ' ' + index + '.problem')
 del vim.current.buffer[:]
-vim.current.buffer.append(parse_problem(directory, cf_domain, contestId, index, False).split('\n'))
+vim.current.buffer.append(parse_problem(directory, cf_domain, contestId, index, needTests == 'True').split('\n'))
 del vim.current.buffer[0]
 EOF
 :%s/\n\n\n/\r\r/g

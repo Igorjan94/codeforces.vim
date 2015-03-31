@@ -4,7 +4,7 @@
 if exists("g:loaded_cf") || &cp
     finish
 endif
-let g:loaded_cf          = 0.2
+let g:loaded_cf          = 0.3
 let s:keepcpo            = &cpo
 set cpo&vim
 "}}}
@@ -72,6 +72,7 @@ command! -nargs=0 CodeForcesUserSubmissions   call CodeForces#CodeForcesUserSubm
 command! -nargs=+ CodeForcesSubmitIndexed     call CodeForces#CodeForcesSubmitIndexed(<f-args>)
 command! -nargs=0 CodeForcesSubmit            call CodeForces#CodeForcesSubmit()
 command! -nargs=1 CodeForcesLoadTask          call CodeForces#CodeForcesLoadTask(<q-args>)
+command! -nargs=1 CodeForcesLoadTaskWithTests call CodeForces#CodeForcesLoadTaskWithTests(<q-args>)
 command! -nargs=+ CodeForcesLoadTaskContestId call CodeForces#CodeForcesLoadTaskContestId(<f-args>)
 command! -nargs=0 CodeForcesContestList       call CodeForces#CodeForcesContestList()
 command! -nargs=0 CodeForcesContestListNext   call CodeForces#CodeForcesContestListNext()

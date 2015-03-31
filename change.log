@@ -16,3 +16,7 @@ version 0.2:
 * Added gym support
 * Added (untested) support of not public contests /*added cookies in html-requests, I think it should work. Also don't know if api with cookies give me standings for "closed" round, let's wait for VkCup2*/
 * Refactoring
+
+version 0.3:
+
+* Added flag needTests to problem parsing
