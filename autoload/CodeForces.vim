@@ -408,6 +408,8 @@ else:
         else:
             x = x['result']
             st = x['contest']['phase']
+            if x['contest']['type'] == 'ICPC':
+                st = 'FINISHED'
             if st == 'SYSTEM_TEST':
                 phase = 1
             else:
@@ -418,7 +420,11 @@ else:
                 vim.command('let s:CodeForcesStatusChanged = 0')
             vim.command("let s:CodeForcesStatus = '" + st + "'")
             contestName = x['contest']['name']
-            problems = 'N|Party|Hacks|Score'
+            problems = 'N|Party|'
+            if x['contest']['type'] == 'ICPC':
+                problems += 'Penalty|Solved'
+            else:
+                problems += 'Hacks|Score'
             for problem in x['problems']:
                 price = ''
                 if 'points' in problem.keys():
@@ -437,6 +443,8 @@ else:
                 unof = ''
                 if y['party']['participantType'] != 'CONTESTANT':
                     unof = '*'
+                if x['contest']['type'] == 'ICPC':
+                    hacks = str(int(y['penalty']))
                 s = ' ' + str(y['rank']) + ' | ' + ', '.join(x['handle'] for x in y['party']['members']) + unof + ' | ' + hacks + '|' + str(int(y['points']))
                 for pr in y['problemResults']:
                     s += ' | '
