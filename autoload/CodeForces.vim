@@ -43,7 +43,7 @@ if int(contestId) > 100000:
     typeOfContest = 'gym/'
 
 ext_id          =  {
-    'cpp':   '16',
+    'cpp':   '42',
     'cs':    '9',
     'c':     '10',
     'hs':    '12',
