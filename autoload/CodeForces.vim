@@ -614,8 +614,9 @@ while True:
         except:
             print('IN QUEUE')
     sys.stdout.flush()
-    if data[0]['verdict'] != 'TESTING':
-        break
+    if 'verdict' in data[0].keys():
+        if data[0]['verdict'] != 'TESTING':
+            break
     vim.command('sleep ' + str(updateInterval))
 EOF
 endfunction
@@ -798,7 +799,7 @@ try:
         vim.command('tabnew ../' + x + '/' + x + '.problem')
         vim.command('cd %:p:h')
         vim.command('vsplit ' + x + '.cpp')
-        vim.command('75')
+        vim.command('67')
     vim.command('CodeForcesStandings')
     vim.command('tabnext')
     vim.command('q')
