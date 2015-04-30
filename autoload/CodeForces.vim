@@ -737,6 +737,8 @@ response = requests.post(http + 'data/contests',
 if response.status_code == requests.codes.ok:
     solved_count = response.json()['solvedProblemCountsByContestId']
     total_count = response.json()['problemCountsByContestId']
+else:
+    print("fail loading contest list")
 
 url = api + 'contest.list?gym=false'
 response = requests.get(url).json()
