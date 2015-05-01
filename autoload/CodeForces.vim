@@ -441,8 +441,10 @@ else:
                         hacks += '/'
                     hacks += '-' + str(y['unsuccessfulHackCount'])
                 unof = ''
-                if y['party']['participantType'] != 'CONTESTANT':
+                if y['party']['participantType'] == 'OUT_OF_COMPETITION':
                     unof = '*'
+                if y['party']['participantType'] == 'VIRTUAL':
+                    unof = '#'
                 if x['contest']['type'] == 'ICPC':
                     hacks = str(int(y['penalty']))
                 s = ' ' + str(y['rank']) + ' | ' + ', '.join(x['handle'] for x in y['party']['members']) + unof + ' | ' + hacks + '|' + str(int(y['points']))
