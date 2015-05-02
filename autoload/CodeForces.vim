@@ -527,6 +527,8 @@ function! CodeForces#CodeForcesColor() "{{{
 python << EOF
 users = open(prefix + '/codeforces.users', 'r')
 for user in users:
+    if not ' ' in user:
+        continue
     [handle, color] = user[:-1].split(' ', 1)
     s = "let x = matchadd('" + color + "', '" + handle + "')"
     vim.command(s)
