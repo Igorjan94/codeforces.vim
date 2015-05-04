@@ -83,7 +83,7 @@ class CodeForcesSubmissionParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == 'pre':
             for (x, y) in attrs:
-                if x == 'class' and y == 'prettyprint':
+                if x == 'class' and y == 'prettyprint program-source':
                     self.parsing = True
 
     def handle_endtag(self, tag):
@@ -587,11 +587,10 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             del vim.current.buffer[:]
 
             parser = CodeForcesSubmissionParser()
-            parser.feed(requests.post(http + typeOfContest + contestId + '/submission/' + str(submissionId), cookies = cookies, params = csrf_token_p).text.encode('utf-8'))
+            parser.feed(requests.post(http + typeOfContest + contestId + '/submission/' + str(submissionId), cookies = cookies, params = csrf_token_p).text.encode('utf-8').replace('\r', ''))
             vim.current.buffer.append(parser.submission.encode('utf-8').split('\n'))
 
             del vim.current.buffer[0]
-            vim.command('%s/\r//g')
             vim.command('w')
 EOF
 endfunction
