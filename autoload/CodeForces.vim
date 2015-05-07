@@ -24,6 +24,11 @@ SAMPLE_INPUT   = vim.eval('g:CodeForcesInput')
 SAMPLE_OUTPUT  = vim.eval('g:CodeForcesOutput')
 cf_domain      = vim.eval('g:CodeForcesDomain')
 csrf_token     = vim.eval('g:CodeForcesToken')
+
+jsessionid     = vim.eval('g:CodeForcesJSessionId')
+weird          = vim.eval('g:CodeForces39ce7')
+user_agent     = vim.eval('g:CodeForcesUserAgent')
+
 x_user         = vim.eval('g:CodeForcesXUser')
 prefix         = vim.eval('s:CodeForcesPrefix')
 contestId      = vim.eval('g:CodeForcesContestId')
@@ -33,7 +38,8 @@ username       = vim.eval('g:CodeForcesUsername')
 countSt        = vim.eval('g:CodeForcesCount')
 updateInterval = vim.eval('g:CodeForcesUpdateInterval')
 countOfSubmits = vim.eval('g:CodeForcesCountOfSubmits')
-cookies        = {'X-User' : x_user}
+cookies        = {'X-User' : x_user, 'JSESSIONID' : jsessionid}
+headers        = {'User-Agent' : user_agent}
 csrf_token_p   = {'csrf_token' : csrf_token}
 http           = 'http://codeforces.' + cf_domain + '/'
 api            = http + 'api/'
@@ -636,7 +642,7 @@ if not extension in ext_id.keys():
     print("I don't know extension ." + extension + ' :(')
 else:
     parts = {
-            'csrf_token':            csrf_token,
+            'csrf_token':            csrf_token, 
             'action':                'submitSolutionFormSubmitted',
             'submittedProblemIndex': filename,
             'source':                open(fullPath, 'rb'),
@@ -645,11 +651,12 @@ else:
             '_tta':                  '222'
     }
     print('you are submitting ' + str(contestId) + filename + '.' + extension)
+    print('ok')
     r = requests.post(http + typeOfContest + contestId + '/problem/' + filename,
-        params  = csrf_token_p,
         files   = parts,
+        headers = headers,
         cookies = cookies)
-    print(r)
+    print(r.text)
     if r.status_code == requests.codes.ok:
         print('Solution is successfully sent. Current time is ' + time.strftime('%H:%M:%S'))
 EOF
