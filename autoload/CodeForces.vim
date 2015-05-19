@@ -40,7 +40,7 @@ updateInterval = vim.eval('g:CodeForcesUpdateInterval')
 countOfSubmits = vim.eval('g:CodeForcesCountOfSubmits')
 cookies        = {'X-User' : x_user, 'JSESSIONID' : jsessionid, '39ce7' : weird}
 headers        = {'User-Agent' : user_agent}
-csrf_token_p   = {'csrf_token' : csrf_token}
+csrf_token_p   = {'csrf_token' : csrf_token, '_tta' : '222'}
 http           = 'http://codeforces.' + cf_domain + '/'
 api            = http + 'api/'
 phase          = 0
@@ -387,7 +387,7 @@ if vim.eval('g:CodeForcesContestId') == 0:
     print('CodeForcesContestId is not set. Add it in .vimrc or just call :CodeForcesStandings <CodeForcesContestId>')
 else:
     contestId = vim.eval('g:CodeForcesContestId')
-    params = {'handles' : '', 'room' : '', 'showUnofficial' : '', 'from' : vim.eval('s:CodeForcesFrom'), 'count' : countSt, 'contestId' : contestId, 'csrf_token': csrf_token}
+    params = {'handles' : '', 'room' : '', 'showUnofficial' : '', 'from' : vim.eval('s:CodeForcesFrom'), 'count' : countSt, 'contestId' : contestId}
     if vim.eval('s:CodeForcesRoom') != '0':
         try:
             params['room'] = str(requests.post(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true', cookies = cookies, params = csrf_token_p, headers = headers).json()['result']['rows'][0]['party']['room'])
@@ -408,7 +408,7 @@ else:
             vim.command(vim.eval('g:CodeForcesCommandStandings') + ' ' + prefix + '/codeforces.standings')
             vim.command('call CodeForces#CodeForcesColor()')
         del vim.current.buffer[:]
-        x = requests.post(url, params = params, cookies = cookies, headers = headers)
+        x = requests.post(url, params = params, cookies = cookies, headers = headers, files = csrf_token_p)
         print(x.text)
         x = x.json()
         if x['status'] != 'OK':
@@ -658,7 +658,7 @@ else:
         files   = parts,
         headers = headers,
         cookies = cookies)
-    print(r.text)
+        #    print(r.text)
     if r.status_code == requests.codes.ok:
         print('Solution is successfully sent. Current time is ' + time.strftime('%H:%M:%S'))
 EOF
