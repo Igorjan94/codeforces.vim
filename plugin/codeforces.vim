@@ -41,7 +41,7 @@ if !exists('g:CodeForcesLang')
     let g:CodeForcesLang           = "ru"
 endif
 if !exists('g:CodeForcesDomain')
-    let g:CodeForcesDomain         = "ru"
+    let g:CodeForcesDomain         = "com"
 endif
 if !exists('g:CodeForcesCountOfSubmits')
     let g:CodeForcesCountOfSubmits = 5
