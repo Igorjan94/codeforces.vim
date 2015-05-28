@@ -8,12 +8,16 @@
 * Load text of problems ([Russian](http://i.imgur.com/Q5M9fsd.png) | [English](http://i.imgur.com/NAmMBEj.png))
 * Download last submission of user to problem ([qwerty787788's solution to F](http://i.imgur.com/vqvZV7Y.png))
 
+## UPD (28.05.2015)
+
+After fixing bug of csrf-token contest list and getting friends doesn't work. I wish I can fix it, but help me if you can. Also standings-with-friends can fail if you have many friends(cauze of get-request length restriction). Before contest I advice you to refresh _all_ data, related to _you_, some values can expire(except for user-agent, ofc) suddenly. Read about these variables below
+
 ## What I'm planning to do
 
 * Full coloring of standings (I tested it on 10k users, it runs veryveryvery slow. So, I leave it as it is or, please, say how to do it in other way)
 * <s>Room standings</s> Done
 * Parsing sapmles and automatic testing like (C|J)Helper does. In progress...
-* Deleting unused code, local uncludes (C++)
+* Deleting unused code, local uncludes (C++) (You can watch [here](https://github.com/Igorjan94/CF/blob/master/staff/importer.py), script, which 'links' your code in specific format)
 * <s>Change `tabnew` to user-defined command</s> Done.
 * ...
 
@@ -66,10 +70,13 @@ show only friends(default false):
 set values to submit:  
 
 [Cookies in opera](http://i.imgur.com/B3C2KtK.png)  
-You should copy X-User value(92 hex digits) and JSession(32 hex digits without '-n1')
+You should copy X-User value(92 hex digits) and JSession(32 hex digits and '-n1'), csrf-token(C^U in browser and look at first lines on source code of any cf-page) and cookie with name 39ce7(may work without it) and userAgent string (C-S-I in browser, console, navigator.useragent)
 
-- `let g:CodeForcesXUser = [x] * 32 `
-- `let g:CodeForcesToken = [x] * 92 `
+- `let g:CodeForcesJSessionId = [x] * 32 -n1`
+- `let g:CodeForcesUserAgent = "Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16"`
+- `let g:CodeForces39ce7 = CF [x] * 6`
+- `let g:CodeForcesXUser = [x] * 92`
+- `let g:CodeForcesToken = [x] * 32`
 
 set command to open standings/problem/submission (default 'tabnew'):
 
@@ -124,7 +131,7 @@ Get standings 518 (if contestId is not set, then `g:CodeForcesContestId`):
 
 - ` :CodeForcesStandings 518 `
 
-Get friends (needs XUser and JSession):
+Get friends (needs XUser and JSession): !!!DOESN'T WORK NOW!!!
 
 - ` :CodeForcesLoadFriends `
 
@@ -180,7 +187,7 @@ Test program on samples:
 
 - ` :CodeForcesTest `
 
-Get list of contests (needs XUser and JSession):
+Get list of contests (needs XUser and JSession): !!!DOESN'T WORK NOW!!!
 
 - ` :CodeForcesContestList `
 - ` :CodeForcesContestListNext `
@@ -219,6 +226,8 @@ Folder CF:
 
 `codeforces.users` -- file with colors. In next versions will be command-generated, now by hand. Let's color users how you want!
 Format: `handle Color`  
+
+`codeforces.friends` -- file with friends. Simple list
 `Color = { Red, Yellow, Purple, Blue, Green, Gray, Unrated }`
 
 
