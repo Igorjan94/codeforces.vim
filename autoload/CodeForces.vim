@@ -265,7 +265,7 @@ class CodeForcesFriendsParser(HTMLParser):
 def parse_problem(folder, domain, contest, problem, needTests):
     url = http + 'contest/%s/problem/%s' % (contest, problem)
     parser = CodeForcesProblemParser(folder, needTests, problem)
-    parser.feed(requests.post(url, cookies = cookies, headers = headers, params = csrf_token_p).text.encode('utf-8'))
+    parser.feed(requests.get(url  ).text.encode('utf-8'))
     return parser.problem[:-1].encode('utf-8')
 
 def color(rating):
@@ -298,7 +298,7 @@ def loadFriends():
         counter += 1
 
 def getProblems(contestId):
-    return [(x['index'], x['name']) for x in requests.post(api + 'contest.standings?contestId=%s' % (contestId), cookies = cookies, params = csrf_token_p, headers = headers).json()['result']['problems']]
+    return [(x['index'], x['name']) for x in requests.get(api + 'contest.standings?contestId=%s' % (contestId)  ).json()['result']['problems']]
 EOF
 "}}}
 
@@ -390,7 +390,7 @@ else:
     params = {'handles' : '', 'room' : '', 'showUnofficial' : '', 'from' : vim.eval('s:CodeForcesFrom'), 'count' : countSt, 'contestId' : contestId}
     if vim.eval('s:CodeForcesRoom') != '0':
         try:
-            params['room'] = str(requests.post(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true', cookies = cookies, params = csrf_token_p, headers = headers).json()['result']['rows'][0]['party']['room'])
+            params['room'] = str(requests.get(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true'  ).json()['result']['rows'][0]['party']['room'])
         except:
             print('No rooms or smthng else')
     if vim.eval('g:CodeForcesFriends') != '0':
@@ -408,8 +408,7 @@ else:
             vim.command(vim.eval('g:CodeForcesCommandStandings') + ' ' + prefix + '/codeforces.standings')
             vim.command('call CodeForces#CodeForcesColor()')
         del vim.current.buffer[:]
-        x = requests.post(url, params = params, cookies = cookies, headers = headers, files = csrf_token_p)
-        print(x.text)
+        x = requests.get(url + '?' + '&'.join(str(x) + '=' + str(params[x]) for x in params))
         x = x.json()
         if x['status'] != 'OK':
             vim.current.buffer.append('FAIL, ' + x['comment'])
@@ -565,7 +564,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
         submissionLang = ''
         while True:
             vim.command("echom 'searching submission'")
-            submissions = requests.post(api + 'contest.status?contestId=' + contestId + '&handle=' + handle + '&from=' + str(i) + '&count=' + str(count), cookies = cookies, params = csrf_token_p, headers = headers).json()
+            submissions = requests.get(api + 'contest.status?contestId=' + contestId + '&handle=' + handle + '&from=' + str(i) + '&count=' + str(count)  ).json()
             if submissions['status'] == 'OK':
                 for submission in submissions['result']:
                     if submission['problem']['index'] == index:
@@ -595,7 +594,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             del vim.current.buffer[:]
 
             parser = CodeForcesSubmissionParser()
-            parser.feed(requests.post(http + typeOfContest + contestId + '/submission/' + str(submissionId), cookies = cookies, params = csrf_token_p, headers = headers).text.encode('utf-8').replace('\r', ''))
+            parser.feed(requests.get(http + typeOfContest + contestId + '/submission/' + str(submissionId)  ).text.encode('utf-8').replace('\r', ''))
             vim.current.buffer.append(parser.submission.encode('utf-8').split('\n'))
 
             del vim.current.buffer[0]
@@ -743,9 +742,7 @@ endfunction
 function! CodeForces#CodeForcesContestList() "{{{
 python << EOF
 
-response = requests.post(http + 'data/contests',
-                        params = {'csrf_token': csrf_token, 'action': 'getSolvedProblemCountsByContest'},
-                        cookies = cookies, headers = headers)
+response = requests.get(http + 'data/contests')
 if response.status_code == requests.codes.ok:
     solved_count = response.json()['solvedProblemCountsByContestId']
     total_count = response.json()['problemCountsByContestId']
