@@ -48,10 +48,14 @@ typeOfContest  = 'contest/'
 if int(contestId) > 100000:
     typeOfContest = 'gym/'
 lang           = '&lang='
+locale         = '?locale='
 try:
     lang      += vim.eval('g:CodeForcesLang')
+    locale    += vim.eval('g:CodeForcesLang')
 except:
     lang      += 'en'
+    locale    += 'en'
+
 
 ext_id          =  {
     'cpp':   '42',
@@ -270,7 +274,7 @@ class CodeForcesFriendsParser(HTMLParser):
 def parse_problem(folder, domain, contest, problem, needTests):
     url = http + 'contest/%s/problem/%s' % (contest, problem)
     parser = CodeForcesProblemParser(folder, needTests, problem)
-    parser.feed(requests.get(url + lang).text.encode('utf-8'))
+    parser.feed(requests.get(url + locale).text.encode('utf-8'))
     return parser.problem[:-1].encode('utf-8')
 
 def color(rating):
@@ -291,7 +295,7 @@ def color(rating):
 def loadFriends():
     r = requests.post(http + 'ratings/friends/true', params = csrf_token_p, cookies = cookies, headers = headers).text.encode('utf-8')
     parser = CodeForcesFriendsParser()
-    parser.feed(r)
+    parser.feed(r + locale)
     friends = parser.friends.encode('utf-8')
     friends = re.sub(r'(\s*\n\s*)+', '\n', friends)
     friends = re.sub(r'^(\s*\n\s*)+', '', friends)
@@ -318,7 +322,7 @@ def parse(folder, cf_domain, contestId, index, flag):
 
 directory = vim.eval('directory')
 extension = vim.eval("fnamemodify('" + template + "', ':e')")
-problems = getProblems(contestId + lang)
+problems = getProblems(contestId)
 for (index, name) in problems:
     vim.command('echom "Parsing problem: {}"'.format(index))
     folder = directory
@@ -598,7 +602,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             del vim.current.buffer[:]
 
             parser = CodeForcesSubmissionParser()
-            parser.feed(requests.get(http + typeOfContest + contestId + '/submission/' + str(submissionId) + lang).text.encode('utf-8').replace('\r', ''))
+            parser.feed(requests.get(http + typeOfContest + contestId + '/submission/' + str(submissionId) + locale).text.encode('utf-8').replace('\r', ''))
             vim.current.buffer.append(parser.submission.encode('utf-8').split('\n'))
 
             del vim.current.buffer[0]
