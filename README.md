@@ -10,7 +10,8 @@
 
 ## UPD (28.05.2015)
 
-After fixing bug of csrf-token contest list and getting friends doesn't work. I wish I can fix it, but help me if you can. Also standings-with-friends can fail if you have many friends(cauze of get-request length restriction). Before contest I advice you to refresh _all_ data, related to _you_, some values can expire(except for user-agent, ofc) suddenly. Read about these variables below
+After fixing bug of csrf-token contest list(with count of solved problems) and getting friends doesn't work. I wish I can fix it, but help me if you can. Also standings-with-friends can fail if you have many friends(cauze of get-request length restriction). Before contest I advice you to refresh _all_ data, related to _you_, some values can expire(except for user-agent, ofc) suddenly. Read about these variables below
+I didn't test it in trains, but it shouldn't work in not public contests at all except for submit, but after update I'm not sure
 
 ## What I'm planning to do
 
@@ -113,6 +114,10 @@ template file to copy in directory with samples/problem statement:
 
 - `let g:CodeForcesTemplate = '/some/long/path/to/template.cpp`
 
+change language to russian:
+
+- `let g:CodeForcesLang = 'ru'`
+
 ### Functions
 
 Next standings page:
@@ -187,7 +192,7 @@ Test program on samples:
 
 - ` :CodeForcesTest `
 
-Get list of contests (needs XUser and JSession): !!!DOESN'T WORK NOW!!!
+Get list of contests: (count of solved problems doesn't work!!!)
 
 - ` :CodeForcesContestList `
 - ` :CodeForcesContestListNext `

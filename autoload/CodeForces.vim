@@ -47,6 +47,11 @@ phase          = 0
 typeOfContest  = 'contest/'
 if int(contestId) > 100000:
     typeOfContest = 'gym/'
+lang           = '&lang='
+try:
+    lang      += vim.eval('g:CodeForcesLang')
+except:
+    lang      += 'en'
 
 ext_id          =  {
     'cpp':   '42',
@@ -265,7 +270,7 @@ class CodeForcesFriendsParser(HTMLParser):
 def parse_problem(folder, domain, contest, problem, needTests):
     url = http + 'contest/%s/problem/%s' % (contest, problem)
     parser = CodeForcesProblemParser(folder, needTests, problem)
-    parser.feed(requests.get(url  ).text.encode('utf-8'))
+    parser.feed(requests.get(url + lang).text.encode('utf-8'))
     return parser.problem[:-1].encode('utf-8')
 
 def color(rating):
@@ -298,7 +303,7 @@ def loadFriends():
         counter += 1
 
 def getProblems(contestId):
-    return [(x['index'], x['name']) for x in requests.get(api + 'contest.standings?contestId=%s' % (contestId)  ).json()['result']['problems']]
+    return [(x['index'], x['name']) for x in requests.get(api + 'contest.standings?contestId=%s%s' % (contestId, lang)  ).json()['result']['problems']]
 EOF
 "}}}
 
@@ -308,13 +313,12 @@ echom 'Parsing contest'
 python << EOF
 
 def parse(folder, cf_domain, contestId, index, flag):
-    print('here')
     parsed = parse_problem(folder, cf_domain, contestId, index, True)
     open('/'.join((folder, index + '.problem')), 'w').write(parsed)
 
 directory = vim.eval('directory')
 extension = vim.eval("fnamemodify('" + template + "', ':e')")
-problems = getProblems(contestId)
+problems = getProblems(contestId + lang)
 for (index, name) in problems:
     vim.command('echom "Parsing problem: {}"'.format(index))
     folder = directory
@@ -390,7 +394,7 @@ else:
     params = {'handles' : '', 'room' : '', 'showUnofficial' : '', 'from' : vim.eval('s:CodeForcesFrom'), 'count' : countSt, 'contestId' : contestId}
     if vim.eval('s:CodeForcesRoom') != '0':
         try:
-            params['room'] = str(requests.get(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true'  ).json()['result']['rows'][0]['party']['room'])
+            params['room'] = str(requests.get(api + 'contest.standings?contestId=' + contestId + '&handles=' + username + '&showUnofficial=true' + lang).json()['result']['rows'][0]['party']['room'])
         except:
             print('No rooms or smthng else')
     if vim.eval('g:CodeForcesFriends') != '0':
@@ -408,7 +412,7 @@ else:
             vim.command(vim.eval('g:CodeForcesCommandStandings') + ' ' + prefix + '/codeforces.standings')
             vim.command('call CodeForces#CodeForcesColor()')
         del vim.current.buffer[:]
-        x = requests.get(url + '?' + '&'.join(str(x) + '=' + str(params[x]) for x in params))
+        x = requests.get(url + '?' + '&'.join(str(x) + '=' + str(params[x]) for x in params) + lang)
         x = x.json()
         if x['status'] != 'OK':
             vim.current.buffer.append('FAIL, ' + x['comment'])
@@ -564,7 +568,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
         submissionLang = ''
         while True:
             vim.command("echom 'searching submission'")
-            submissions = requests.get(api + 'contest.status?contestId=' + contestId + '&handle=' + handle + '&from=' + str(i) + '&count=' + str(count)  ).json()
+            submissions = requests.get(api + 'contest.status?contestId=' + contestId + '&handle=' + handle + '&from=' + str(i) + '&count=' + str(count) + lang).json()
             if submissions['status'] == 'OK':
                 for submission in submissions['result']:
                     if submission['problem']['index'] == index:
@@ -594,7 +598,7 @@ if col >= 0 and tasks[col] != '|' and row > 2:
             del vim.current.buffer[:]
 
             parser = CodeForcesSubmissionParser()
-            parser.feed(requests.get(http + typeOfContest + contestId + '/submission/' + str(submissionId)  ).text.encode('utf-8').replace('\r', ''))
+            parser.feed(requests.get(http + typeOfContest + contestId + '/submission/' + str(submissionId) + lang).text.encode('utf-8').replace('\r', ''))
             vim.current.buffer.append(parser.submission.encode('utf-8').split('\n'))
 
             del vim.current.buffer[0]
@@ -613,7 +617,7 @@ def formatString(s):
 
 while True:
     try:
-        data = requests.get(api + 'user.status?handle=' + username + '&from=1&count=' + str(countOfSubmits)).json()['result']
+        data = requests.get(api + 'user.status?handle=' + username + '&from=1&count=' + str(countOfSubmits) + lang).json()['result']
     except:
         vim.command('sleep ' + str(updateInterval))
         continue
@@ -750,7 +754,7 @@ else:
     print("fail loading contest list")
 
 url = api + 'contest.list?gym=false'
-response = requests.get(url).json()
+response = requests.get(url + lang).json()
 if vim.eval("expand('%:e')").lower() != 'contestlist':
     vim.command('tabnew ' + prefix + '/codeforces.contestList')
 del vim.current.buffer[:]
@@ -773,12 +777,7 @@ else:
                     time = -time
                 phase = '{}h {}m'.format(time / 3600, (time % 3600) / 60)
             contest['name'] = (contest['name'].encode('utf-8'))
-            if contestId in solved_count:
-                solved_cnt = solved_count[contestId]
-                total_cnt = total_count[contestId]
-                text = '{}|{}|{}|{} / {}'.format(contest['name'], contestId, phase, solved_cnt, total_cnt)
-            else:
-                text = '{}|{}|{}|0'.format(contest['name'], contestId, phase)
+            text = '{}|{}|{}|0'.format(contest['name'], contestId, phase)
             vim.current.buffer.append(text.decode('utf-8'))
         cnt += 1
         if cnt >= contest_to:
@@ -789,6 +788,11 @@ else:
     # s = 'let x = matchadd(\"' + color + '\", \"' + handle + '\")'
     # vim.command(s)
 EOF
+"if contestId in solved_count:
+    "solved_cnt = solved_count[contestId]
+    "total_cnt = total_count[contestId]
+    "text = '{}|{}|{}|{} / {}'.format(contest['name'], contestId, phase, solved_cnt, total_cnt)
+"else:
 highlight Green ctermfg=green
 match Green /\([0-9]\+\) \/ \1/
 
