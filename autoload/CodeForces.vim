@@ -462,7 +462,14 @@ else:
                     unof = '#'
                 if x['contest']['type'] == 'ICPC':
                     hacks = str(int(y['penalty']))
-                s = ' ' + str(y['rank']) + ' | ' + ', '.join(x['handle'] for x in y['party']['members']) + unof + ' | ' + hacks + '|' + str(int(y['points']))
+                members = ''
+                if 'teamName' in y['party']:
+                    members = y['party']['teamName']
+                if 'members' in y['party'] and len(y['party']['members']) > 0:
+                    if members != '':
+                        members += ': '
+                    members += ', '.join(x['handle'] for x in y['party']['members'])
+                s = ' ' + str(y['rank']) + ' | ' + members + unof + ' | ' + hacks + '|' + str(int(y['points']))
                 for pr in y['problemResults']:
                     s += ' | '
                     unsuc = pr['rejectedAttemptCount']
