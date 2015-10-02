@@ -282,13 +282,15 @@ def color(rating):
         return 'Unrated'
     if rating < 1200:
         return 'Gray'
-    if rating < 1500:
+    if rating < 1400:
         return 'Green'
-    if rating < 1700:
-        return 'Blue'
+    if rating < 1600:
+        return 'Cyan'
     if rating < 1900:
-        return 'Purple'
+        return 'Blue'
     if rating < 2200:
+        return 'Purple'
+    if rating < 2400:
         return 'Yellow'
     return 'Red'
 
@@ -535,6 +537,7 @@ function! CodeForces#CodeForcesColor() "{{{
     highlight Yellow  ctermfg=yellow
     highlight Purple  ctermfg=magenta
     highlight Blue    ctermfg=blue
+    highlight Cyan    ctermfg=cyan
     highlight Green   ctermfg=green
     highlight Gray    ctermfg=gray
     highlight Unrated ctermfg=white
