@@ -7,8 +7,14 @@
 * Watch result of last user's submissions ([Results](http://i.imgur.com/hDWFJXo.png))
 * Load text of problems ([Russian](http://i.imgur.com/Q5M9fsd.png) | [English](http://i.imgur.com/NAmMBEj.png))
 * Download last submission of user to problem ([qwerty787788's solution to F](http://i.imgur.com/vqvZV7Y.png))
+## UPD (02.10.2015)
 
-## UPD (28.05.2015)
+You can use 'Cyan' in coloring of standings after revolution! 
+
+P.S.: Please, merge CountZero's submitter with my plugin, I wish my plugin should submit :)
+P.P.S.: does anybody use this plugin?)
+
+# UPD (28.05.2015)
 
 After fixing bug of csrf-token contest list(with count of solved problems) and getting friends doesn't work. I wish I can fix it, but help me if you can. Also standings-with-friends can fail if you have many friends(cauze of get-request length restriction). Before contest I advice you to refresh _all_ data, related to _you_, some values can expire(except for user-agent, ofc) suddenly. Read about these variables below
 I didn't test it in trains, but it shouldn't work in not public contests at all except for submit, but after update I'm not sure
