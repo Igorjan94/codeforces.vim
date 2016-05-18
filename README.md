@@ -10,7 +10,7 @@
 
 ## UPD (18.05.2016)
 
-I have finally returned submit function to my plugin! You should _run_ server in plugin folder before contest. It opens chrome(now hardcoded). To start contest and login execute `:CodeForcesInitServer`, but before it add new variable `g:CodeForcesPassword` and do not forget about username in your `.vimrc`. You can use this window to watch CF, but I'd recommend you to move this window on another desktop, it will be managed by server. After successefull login, you can submit with `S-F5` as it was done before.
+I have finally returned submit function to my plugin! You should _run_ server in plugin folder before contest. It opens chrome(now hardcoded). To start contest and login execute `:CodeForcesInitServer`, but before it add new variable `g:CodeForcesPassword` and do not forget about username in your `.vimrc`. You can use this window to watch CF, but I'd recommend you to move this window on another desktop, it will be managed by server. After successful login, you can submit with `S-F5` as it was done before.
 
 If you find a way to work with `PhantomJS`, pull request it! :)
 
@@ -24,7 +24,7 @@ P.S.: Please, merge CountZero's submitter with my plugin, I wish my plugin shoul
 
 P.P.S.: does anybody use this plugin?)
 
-# UPD (28.05.2015)
+## UPD (28.05.2015)
 
 After fixing bug of csrf-token contest list(with count of solved problems) and getting friends doesn't work. I wish I can fix it, but help me if you can. Also standings-with-friends can fail if you have many friends(cauze of get-request length restriction). Before contest I advice you to refresh _all_ data, related to _you_, some values can expire(except for user-agent, ofc) suddenly. Read about these variables below
 I didn't test it in trains, but it shouldn't work in not public contests at all except for submit, but after update I'm not sure
@@ -33,8 +33,8 @@ I didn't test it in trains, but it shouldn't work in not public contests at all 
 
 * Full coloring of standings (I tested it on 10k users, it runs veryveryvery slow. So, I leave it as it is or, please, say how to do it in other way)
 * <s>Room standings</s> Done
-* Parsing sapmles and automatic testing like (C|J)Helper does. In progress...
-* Deleting unused code, local uncludes (C++) (You can watch [here](https://github.com/Igorjan94/CF/blob/master/staff/importer.py), script, which 'links' your code in specific format)
+* Parsing samples and automatic testing like (C|J)Helper does. In progress...
+* Deleting unused code, local includes (C++) (You can watch [here](https://github.com/Igorjan94/CF/blob/master/staff/importer.py), script, which 'links' your code in specific format)
 * <s>Change `tabnew` to user-defined command</s> Done.
 * ...
 
@@ -45,7 +45,7 @@ I didn't test it in trains, but it shouldn't work in not public contests at all 
 * Use your favourite plugin manager, for example `Bundle 'Igorjan94/codeforces.vim'`, then `:PluginInstall`
 * Just clone rep to your `.vim/` directory
 
-all variables and functions have name with prefix 'CodeForces'
+All variables and functions have name with prefix 'CodeForces'
 
 ## Dependencies
 
@@ -118,7 +118,7 @@ set filename to user-output (default 'my_output'):
 
 template file to copy in directory with samples/problem statement:
 
-- `let g:CodeForcesTemplate = '/some/long/path/to/template.cpp`
+- `let g:CodeForcesTemplate = '/some/long/path/to/template.cpp'`
 
 change language to russian:
 
@@ -142,7 +142,7 @@ Get standings 518 (if contestId is not set, then `g:CodeForcesContestId`):
 
 - ` :CodeForcesStandings 518 `
 
-Get friends (needs XUser and JSession): !!!DOESN'T WORK NOW!!!
+Get friends: !!!DOESN'T WORK NOW!!!
 
 - ` :CodeForcesLoadFriends `
 
@@ -170,11 +170,11 @@ Get last submissions:
 
 - ` :CodeForcesUserSubmissions `
 
-Submit opened file as problem B1 to 513 round (needs XUser and JSession):
+Submit opened file as problem B1 to 513 round (requires password and server):
 
 - ` :CodeForcesSubmitIndexed 513 B1 `
 
-Submit opened file to `g:CodeForcesContestId` round (needs XUser and JSession):
+Submit opened file to `g:CodeForcesContestId` round (requires password and server):
 
 - ` :CodeForcesSubmit `
 
@@ -217,15 +217,15 @@ Of course, bind it like you want, I just suggest this:
 - ` nmap <leader>cfu <ESC>:CodeForces_U_nofficial<CR>`
 - ` nmap <leader>cfl <ESC>:CodeForces_L_oadTask `
 - ` nmap <leader>cfP <ESC>:CodeForces_P_ageStandings `
-- ` nmap <leader>cfR <ESC>:CodeForces_R_oomStandings `
-- ` nmap <leader>cfA <ESC>:CodeForcesP_a_rseContest `
-- ` nmap <leader>cft <ESC>:CodeForces_T_est`
+- ` nmap <leader>cfR <ESC>:CodeForces_R_oomStandings<CR>`
+- ` nmap <leader>cfA <ESC>:CodeForcesP_a_rseContest<CR>`
+- ` nmap <leader>cft <ESC>:CodeForces_T_est<CR>`
 - ` nmap <leader>cfcl <ESC>:CodeForces_C_ontest_L_ist<CR>`
 - ` nmap <leader>cfcn <ESC>:CodeForces_C_ontestList_N_ext<CR>`
 - ` nmap <leader>cfcp <ESC>:CodeForces_C_ontestList_P_rev<CR>`
 - ` nmap <leader>cfF <ESC>:CodeForcesLoad_F_riends<CR>`
 
-I think `<S-F5>` very difficult to press ocasionally, so:
+I think `<S-F5>` is very difficult to press occasionally, so:
 
 - ` noremap <S-F5>  <ESC>:w<CR><ESC>:CodeForcesSubmit<CR>`
 - ` noremap <S-F6>  <ESC>:w<CR><ESC>:CodeForcesUserSubmissions<CR>`

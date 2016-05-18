@@ -4,7 +4,7 @@
 if exists("g:loaded_cf") || &cp
     finish
 endif
-let g:loaded_cf          = 0.3
+let g:loaded_cf          = 0.4
 let s:keepcpo            = &cpo
 set cpo&vim
 "}}}

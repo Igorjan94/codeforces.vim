@@ -21,3 +21,7 @@ version 0.3:
 
 * Added flag needTests to problem parsing
 * ICPC -> (hacks->penalty)
+
+version 0.4:
+
+* Added submit-server
