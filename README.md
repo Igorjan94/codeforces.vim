@@ -11,7 +11,9 @@
 ## UPD (18.05.2016)
 
 I have finally returned submit function to my plugin! You should _run_ server in plugin folder before contest. It opens chrome(now hardcoded). To start contest and login execute `:CodeForcesInitServer`, but before it add new variable `g:CodeForcesPassword` and do not forget about username in your `.vimrc`. You can use this window to watch CF, but I'd recommend you to move this window on another desktop, it will be managed by server. After successefull login, you can submit with `S-F5` as it was done before.
+
 If you find a way to work with `PhantomJS`, pull request it! :)
+
 New dependencies: python2-flask, python2-selenium
 
 ## UPD (02.10.2015)
@@ -19,6 +21,7 @@ New dependencies: python2-flask, python2-selenium
 You can use 'Cyan' in coloring of standings after revolution! 
 
 P.S.: Please, merge CountZero's submitter with my plugin, I wish my plugin should submit :)
+
 P.P.S.: does anybody use this plugin?)
 
 # UPD (28.05.2015)
@@ -88,7 +91,7 @@ set your handle:
 
 - `let g:CodeForcesUsername = 'Igorjan94'`
 
-set your handle:
+set your password:
 
 - `let g:CodeForcesPassword = 'yourSecretPasswordHere'`
 
