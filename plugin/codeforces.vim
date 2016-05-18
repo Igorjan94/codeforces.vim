@@ -80,6 +80,7 @@ command! -nargs=0 CodeForcesContestListPrev   call CodeForces#CodeForcesContestL
 command! -nargs=0 CodeForcesParseContest      call CodeForces#CodeForcesParseContest()
 command! -nargs=0 CodeForcesTest              call CodeForces#CodeForcesTest()
 command! -nargs=0 CodeForcesLoadFriends       call CodeForces#CodeForcesLoadFriends()
+command! -nargs=0 CodeForcesInitServer        call CodeForces#CodeForcesInitServer()
 "}}}
 
 "{{{

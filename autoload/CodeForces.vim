@@ -19,28 +19,35 @@ import time
 import threading
 from time import sleep
 from HTMLParser import HTMLParser
+from urlparse import urljoin
+
+# local server urls
+SERVER_HOST = 'localhost'
+SERVER_PORT = 8200
+SERVER_ADDR = 'http://{}:{}/'.format(SERVER_HOST, SERVER_PORT)
+
+# local server routes
+INIT_SERVER_PART = 'init_server'
+INIT_CONTEST_PART = 'init_contest'
+SUBMIT_PART = 'submit'
+
+# codeforces urls
+CF_MAIN_URL = 'http://codeforces.com/'
+CF_LOGIN_URL = urljoin(CF_MAIN_URL, 'enter')
 
 SAMPLE_INPUT   = vim.eval('g:CodeForcesInput')
 SAMPLE_OUTPUT  = vim.eval('g:CodeForcesOutput')
-cf_domain      = vim.eval('g:CodeForcesDomain')
-csrf_token     = vim.eval('g:CodeForcesToken')
+cf_domain      = 'com'
 
-jsessionid     = vim.eval('g:CodeForcesJSessionId')
-weird          = vim.eval('g:CodeForces39ce7')
-user_agent     = vim.eval('g:CodeForcesUserAgent')
-
-x_user         = vim.eval('g:CodeForcesXUser')
 prefix         = vim.eval('s:CodeForcesPrefix')
 contestId      = vim.eval('g:CodeForcesContestId')
 contestFormat  = vim.eval('g:CodeForcesContestFormat')
 template       = vim.eval('g:CodeForcesTemplate')
 username       = vim.eval('g:CodeForcesUsername')
+password       = vim.eval('g:CodeForcesPassword')
 countSt        = vim.eval('g:CodeForcesCount')
 updateInterval = vim.eval('g:CodeForcesUpdateInterval')
 countOfSubmits = vim.eval('g:CodeForcesCountOfSubmits')
-cookies        = {'X-User' : x_user, 'JSESSIONID' : jsessionid, '39ce7' : weird}
-headers        = {'User-Agent' : user_agent}
-csrf_token_p   = {'csrf_token' : csrf_token, '_tta' : '222'}
 http           = 'http://codeforces.' + cf_domain + '/'
 api            = http + 'api/'
 phase          = 0
@@ -86,6 +93,22 @@ def entity2char(x):
         return chr(int(x[2:-1]))   
     else:
         return chr(int(x))
+
+# Submitter{{{
+def init_server(handle, password):
+    data = { 'handle': handle, 'password': password }
+    requests.get(urljoin(SERVER_ADDR, INIT_SERVER_PART), data=data)
+
+
+def init_contest(contest_id):
+    data = { 'num': contest_id }
+    requests.get(urljoin(SERVER_ADDR, INIT_CONTEST_PART), data=data)
+
+
+def submit(problem_id, lang, filename):
+    data = { 'id': problem_id, 'lang': ext_id[lang], 'text': ''.join(open(filename, 'r').readlines()) }
+    requests.post(urljoin(SERVER_ADDR, SUBMIT_PART), data=data)
+#}}}
 
 # CFSP {{{
 class CodeForcesSubmissionParser(HTMLParser):
@@ -294,8 +317,9 @@ def color(rating):
         return 'Yellow'
     return 'Red'
 
+# unavailable
 def loadFriends():
-    r = requests.post(http + 'ratings/friends/true', params = csrf_token_p, cookies = cookies, headers = headers).text.encode('utf-8')
+    r = requests.post(http + 'ratings/friends/true').text.encode('utf-8')
     parser = CodeForcesFriendsParser()
     parser.feed(r + locale)
     friends = parser.friends.encode('utf-8')
@@ -525,6 +549,7 @@ function! CodeForces#CodeForcesSetRound(id) "{{{
     let g:CodeForcesContestId = a:id
 python << EOF
 contestId = vim.eval('g:CodeForcesContestId')
+init_contest(contestId)
 typeOfContest  = 'contest/'
 if int(contestId) > 100000:
     typeOfContest = 'gym/'
@@ -653,31 +678,14 @@ endfunction
 function! CodeForces#CodeForcesSubmitIndexed(contestId, problemIndex) "{{{
 python << EOF
 
-contestId  = vim.eval('a:contestId')
 filename   = vim.eval('a:problemIndex')
 extension  = vim.eval("expand('%:e')").lower()
 fullPath   = vim.eval("expand('%:p')")
 if not extension in ext_id.keys():
     print("I don't know extension ." + extension + ' :(')
 else:
-    parts = {
-            'csrf_token':            csrf_token, 
-            'action':                'submitSolutionFormSubmitted',
-            'submittedProblemIndex': filename,
-            'source':                open(fullPath, 'rb'),
-            'programTypeId':         ext_id[extension],
-            'sourceFile':            '',
-            '_tta':                  '222'
-    }
     print('you are submitting ' + str(contestId) + filename + '.' + extension)
-    print('ok')
-    r = requests.post(http + typeOfContest + contestId + '/problem/' + filename,
-        files   = parts,
-        headers = headers,
-        cookies = cookies)
-        #    print(r.text)
-    if r.status_code == requests.codes.ok:
-        print('Solution is successfully sent. Current time is ' + time.strftime('%H:%M:%S'))
+    submit(filename, extension, fullPath)
 EOF
 call CodeForces#CodeForcesUserSubmissions()
 endfunction
@@ -835,6 +843,14 @@ try:
     vim.command('cd %:p:h')
 except Exception, e:
     print(e)
+EOF
+endfunction
+"}}}
+
+function! CodeForces#CodeForcesInitServer() "{{{
+python << EOF
+init_server(username, password)
+init_contest(contestId)
 EOF
 endfunction
 "}}}

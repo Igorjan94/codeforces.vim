@@ -7,6 +7,13 @@
 * Watch result of last user's submissions ([Results](http://i.imgur.com/hDWFJXo.png))
 * Load text of problems ([Russian](http://i.imgur.com/Q5M9fsd.png) | [English](http://i.imgur.com/NAmMBEj.png))
 * Download last submission of user to problem ([qwerty787788's solution to F](http://i.imgur.com/vqvZV7Y.png))
+
+## UPD (18.05.2016)
+
+I have finally returned submit function to my plugin! You should _run_ server in plugin folder before contest. It opens chrome(now hardcoded). To start contest and login execute `:CodeForcesInitServer`, but before it add new variable `g:CodeForcesPassword` and do not forget about username in your `.vimrc`. You can use this window to watch CF, but I'd recommend you to move this window on another desktop, it will be managed by server. After successefull login, you can submit with `S-F5` as it was done before.
+If you find a way to work with `PhantomJS`, pull request it! :)
+New dependencies: python2-flask, python2-selenium
+
 ## UPD (02.10.2015)
 
 You can use 'Cyan' in coloring of standings after revolution! 
@@ -41,7 +48,8 @@ all variables and functions have name with prefix 'CodeForces'
 
 * Python
   * requests   (all network)
-  * HTMLparser (loadProblem, loadSubmission, loadFriends) 
+  * HTMLparser (loadProblem, loadSubmission, loadFriends)
+  * flask, selenium (submit)
 * [EasyAlign](https://github.com/junegunn/vim-easy-align) for beautiful standings 
 
 ### Variables
@@ -62,10 +70,6 @@ set count of displayed submissions to 10(default 5):
 
 - `let g:CodeForcesCountOfSubmits = 10`
 
-set domain to 'com'(default 'ru'):
-
-- `let g:CodeForcesDomain = 'com'`
-
 show unofficial(default false):
 
 - `let g:CodeForcesShowUnofficial = 1`
@@ -73,17 +77,6 @@ show unofficial(default false):
 show only friends(default false):
 
 - `let g:CodeForcesFriends = 1`
-
-set values to submit:  
-
-[Cookies in opera](http://i.imgur.com/B3C2KtK.png)  
-You should copy X-User value(92 hex digits) and JSession(32 hex digits and '-n1'), csrf-token(C^U in browser and look at first lines on source code of any cf-page) and cookie with name 39ce7(may work without it) and userAgent string (C-S-I in browser, console, navigator.useragent)
-
-- `let g:CodeForcesJSessionId = [x] * 32 -n1`
-- `let g:CodeForcesUserAgent = "Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16"`
-- `let g:CodeForces39ce7 = CF [x] * 6`
-- `let g:CodeForcesXUser = [x] * 92`
-- `let g:CodeForcesToken = [x] * 32`
 
 set command to open standings/problem/submission (default 'tabnew'):
 
@@ -94,6 +87,10 @@ set command to open standings/problem/submission (default 'tabnew'):
 set your handle:
 
 - `let g:CodeForcesUsername = 'Igorjan94'`
+
+set your handle:
+
+- `let g:CodeForcesPassword = 'yourSecretPasswordHere'`
 
 there is (now) two formats of parsing contest:
 
