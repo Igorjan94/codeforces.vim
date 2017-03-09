@@ -10,7 +10,7 @@
 
 ## UPD (18.05.2016)
 
-I have finally returned submit function to my plugin! You should _run_ server in plugin folder before contest. It opens chrome(now hardcoded). To start contest and login execute `:CodeForcesInitServer`, but before it add new variable `g:CodeForcesPassword` and do not forget about username in your `.vimrc`. You can use this window to watch CF, but I'd recommend you to move this window on another desktop, it will be managed by server. After successful login, you can submit with `S-F5` as it was done before.
+I have finally returned submit function to my plugin! You should _run_ server (`python2 ~/.vim/bundle/codeforces.vim/plugin/server.py`) in plugin folder before contest. It opens chrome(now hardcoded). To start contest and login execute `:CodeForcesInitServer`, but before it add new variable `g:CodeForcesPassword` and do not forget about username in your `.vimrc`. You can use this window to watch CF, but I'd recommend you to move this window on another desktop, it will be managed by server. After successful login, you can submit with `S-F5` as it was done before.
 
 If you find a way to work with `PhantomJS`, pull request it! :)
 
