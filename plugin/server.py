@@ -83,6 +83,7 @@ if __name__ == '__main__':
             Select(g.browser.find_element_by_name('submittedProblemIndex')).select_by_value(id)
             Select(g.browser.find_element_by_name('programTypeId')).select_by_value(lang)
             g.browser.execute_script("editAreaLoader.setValue('sourceCodeTextarea', String.raw`{}`)".format(request.form['text']))
+            time.sleep(2)
             g.browser.find_element_by_class_name('submit').submit()
         except Exception as e:
             print(e)
