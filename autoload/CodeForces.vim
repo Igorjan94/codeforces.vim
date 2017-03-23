@@ -30,6 +30,7 @@ SERVER_ADDR = 'http://{}:{}/'.format(SERVER_HOST, SERVER_PORT)
 INIT_SERVER_PART = 'init_server'
 INIT_CONTEST_PART = 'init_contest'
 SUBMIT_PART = 'submit'
+GET_FRIENDS_PART = 'get_friends'
 
 # codeforces urls
 CF_MAIN_URL = 'http://codeforces.com/'
@@ -108,6 +109,10 @@ def init_contest(contest_id):
 def submit(problem_id, lang, filename):
     data = { 'id': problem_id, 'lang': ext_id[lang], 'text': ''.join(open(filename, 'r').readlines()) }
     requests.post(urljoin(SERVER_ADDR, SUBMIT_PART), data=data)
+
+def get_friends():
+	return requests.get(urljoin(SERVER_ADDR, GET_FRIENDS_PART))
+
 #}}}
 
 # CFSP {{{
@@ -257,41 +262,26 @@ class CodeForcesFriendsParser(HTMLParser):
         HTMLParser.__init__(self)
         self.parsing = -1
         self.friends = ''
-        self.ok = False
-
+	
     def handle_starttag(self, tag, attrs):
         if tag == 'div':
             if self.parsing > 0:
                 self.parsing += 1
             try:
-                (x, y) = attrs[0]
-                if x == 'class' and y == 'datatable':
-                    self.parsing = 1
+				(x, y) = attrs[0]
+				if x == 'class' and y.find('datatable') != -1:
+					self.parsing = 1
             except:
                 42
-        if tag == 'td':
-            if self.parsing > 0:
-                self.ok = True 
+        if tag == 'a':
+			if self.parsing > 0:
+				self.friends+=attrs[0][1].split('/')[2]+"\n"
 
     def handle_endtag(self, tag):
         if tag == 'div':
             if self.parsing > 0:
                 self.parsing -= 1
-        if tag == 'td':
-            if self.parsing > 0:
-                self.ok = False
-    
-    def handle_data(self, data):
-        if self.ok:
-            self.friends += data.decode('utf-8')
 
-    def handle_entityref(self, name):
-        if self.ok:
-            self.friends += self.unescape(('&%s;' % name))
-
-    def handle_charref(self, name):
-        if self.ok:
-            self.friends += entity2char(name)
 #}}}
 
 def parse_problem(folder, domain, contest, problem, needTests):
@@ -317,20 +307,16 @@ def color(rating):
         return 'Yellow'
     return 'Red'
 
-# unavailable
+# Should be working
 def loadFriends():
-    r = requests.post(http + 'ratings/friends/true').text.encode('utf-8')
-    parser = CodeForcesFriendsParser()
-    parser.feed(r + locale)
-    friends = parser.friends.encode('utf-8')
-    friends = re.sub(r'(\s*\n\s*)+', '\n', friends)
-    friends = re.sub(r'^(\s*\n\s*)+', '', friends)
-    counter = 0
-    fileFriends = open(prefix + '/codeforces.friends', 'w')
-    for x in friends.split('\n'):
-        if counter % 4 == 1:
-            fileFriends.write(x + '\n')
-        counter += 1
+	r = get_friends().text.encode('utf-8')
+	parser = CodeForcesFriendsParser()
+	parser.feed(r + locale)
+	friends = parser.friends
+	counter = 0
+	fileFriends = open(prefix + '/codeforces.friends', 'w')
+	fileFriends.write(friends)
+	print("Friend list loaded succesfully")
 
 def getProblems(contestId):
     return [(x['index'], x['name']) for x in requests.get(api + 'contest.standings?contestId=%s%s' % (contestId, lang)  ).json()['result']['problems']]

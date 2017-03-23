@@ -19,10 +19,12 @@ SERVER_ADDR = 'http://{}:{}/'.format(SERVER_HOST, SERVER_PORT)
 INIT_SERVER_PART = 'init_server'
 INIT_CONTEST_PART = 'init_contest'
 SUBMIT_PART = 'submit'
+GET_FRIENDS_PART = 'get_friends'
 
 # codeforces urls
 CF_MAIN_URL = 'http://codeforces.com/'
 CF_LOGIN_URL = urljoin(CF_MAIN_URL, 'enter')
+CF_FRIENDS_URL = urljoin(CF_MAIN_URL, 'friends')
 
 if __name__ == '__main__':
     app = Flask(__name__)
@@ -83,11 +85,22 @@ if __name__ == '__main__':
             Select(g.browser.find_element_by_name('submittedProblemIndex')).select_by_value(id)
             Select(g.browser.find_element_by_name('programTypeId')).select_by_value(lang)
             g.browser.execute_script("editAreaLoader.setValue('sourceCodeTextarea', String.raw`{}`)".format(request.form['text']))
+<<<<<<< HEAD
+            time.sleep(1)
+=======
             time.sleep(2)
+>>>>>>> b51a9f9693dcaf3d560c87a05dc90837a554a30f
             g.browser.find_element_by_class_name('submit').submit()
         except Exception as e:
             print(e)
 
+
+    @app.route(urljoin('/', GET_FRIENDS_PART))
+    def get_friends():
+        if g.browser.current_url != CF_FRIENDS_URL:
+            g.browser.get(CF_FRIENDS_URL)
+            sleep()
+        return g.browser.page_source	
 
     @app.route(urljoin('/', SUBMIT_PART), methods=['POST'])
     def submit():
