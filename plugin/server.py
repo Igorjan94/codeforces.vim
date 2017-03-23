@@ -85,11 +85,7 @@ if __name__ == '__main__':
             Select(g.browser.find_element_by_name('submittedProblemIndex')).select_by_value(id)
             Select(g.browser.find_element_by_name('programTypeId')).select_by_value(lang)
             g.browser.execute_script("editAreaLoader.setValue('sourceCodeTextarea', String.raw`{}`)".format(request.form['text']))
-<<<<<<< HEAD
             time.sleep(1)
-=======
-            time.sleep(2)
->>>>>>> b51a9f9693dcaf3d560c87a05dc90837a554a30f
             g.browser.find_element_by_class_name('submit').submit()
         except Exception as e:
             print(e)
@@ -100,7 +96,7 @@ if __name__ == '__main__':
         if g.browser.current_url != CF_FRIENDS_URL:
             g.browser.get(CF_FRIENDS_URL)
             sleep()
-        return g.browser.page_source	
+        return g.browser.page_source
 
     @app.route(urljoin('/', SUBMIT_PART), methods=['POST'])
     def submit():
