@@ -457,6 +457,14 @@ else:
                 if 'points' in problem.keys():
                     price = ' (' + str(int(problem['points'])) + ')'
                 problems += ' | ' + problem['index'] + price
+            if phase == 1:
+                textSTATUS = requests.get(http + typeOfContest + contestId + '/problem/0').text
+                indexSTATUS = textSTATUS.find('<span class="contest-state-regular">')
+                if indexSTATUS != -1:
+                    textSTATUS = textSTATUS[indexSTATUS + 36 : indexSTATUS + 44]
+                    textSTATUS = textSTATUS[:textSTATUS.find('%') + 1]
+                    contestName += ' (System testing: ' + textSTATUS + ')'
+
             vim.current.buffer.append(contestName.encode('utf-8'))
             vim.current.buffer.append(problems.encode('utf-8'))
             for y in x['rows']:
