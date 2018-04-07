@@ -126,7 +126,7 @@ class CodeForcesSubmissionParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == 'pre':
             for (x, y) in attrs:
-                if x == 'class' and y == 'prettyprint program-source':
+                if x == 'class' and y.find('prettyprint') != -1 and y.find('program-source') != -1:
                     self.parsing = True
 
     def handle_endtag(self, tag):
@@ -407,6 +407,11 @@ if vim.eval('g:CodeForcesContestId') == 0:
     print('CodeForcesContestId is not set. Add it in .vimrc or just call :CodeForcesStandings <CodeForcesContestId>')
 else:
     contestId = vim.eval('g:CodeForcesContestId')
+    changes = True
+    try:
+        ratingChanges = requests.get('https://cf-predictor-frontend.herokuapp.com/GetNextRatingServlet?contestId=' + contestId).json()['result']
+    except:
+        changes = False
     params = {'handles' : '', 'room' : '', 'showUnofficial' : '', 'from' : vim.eval('s:CodeForcesFrom'), 'count' : countSt, 'contestId' : contestId}
     if vim.eval('s:CodeForcesRoom') != '0':
         try:
@@ -435,12 +440,12 @@ else:
         else:
             x = x['result']
             st = x['contest']['phase']
-            if x['contest']['type'] == 'ICPC':
-                st = 'FINISHED'
             if st == 'SYSTEM_TEST':
                 phase = 1
             else:
                 phase = 0
+            if x['contest']['type'] == 'ICPC':
+                st = 'FINISHED'
             if st != vim.eval('s:CodeForcesStatus'):
                 vim.command('let s:CodeForcesStatusChanged = 1')
             else:
@@ -457,6 +462,8 @@ else:
                 if 'points' in problem.keys():
                     price = ' (' + str(int(problem['points'])) + ')'
                 problems += ' | ' + problem['index'] + price
+            if changes:
+                problems += ' | Rating change'
             if phase == 1:
                 textSTATUS = requests.get(http + typeOfContest + contestId + '/problem/0').text
                 indexSTATUS = textSTATUS.find('<span class="contest-state-regular">')
@@ -483,13 +490,18 @@ else:
                 if x['contest']['type'] == 'ICPC':
                     hacks = str(int(y['penalty']))
                 members = ''
+                handle = ''
                 if 'teamName' in y['party']:
                     members = y['party']['teamName']
+                    handle = members
                 if 'members' in y['party'] and len(y['party']['members']) > 0:
+                    temp = ', '.join(x['handle'] for x in y['party']['members'])
                     if members != '':
                         members += ': '
-                    members += ', '.join(x['handle'] for x in y['party']['members'])
-                s = ' ' + str(y['rank']) + ' | ' + members + unof + ' | ' + hacks + '|' + str(int(y['points']))
+                    else:
+                        handle = temp
+                    members += temp
+                s = ' ' + str(y['rank']) + ' | ' + members.replace('|', '/') + unof + ' | ' + hacks + '|' + str(int(y['points']))
                 for pr in y['problemResults']:
                     s += ' | '
                     unsuc = pr['rejectedAttemptCount']
@@ -506,6 +518,15 @@ else:
                                 s += str(unsuc)
                         else:
                             s += str(int(pr['points']))
+                if changes:
+                    for cc in ratingChanges:
+                        if cc['handle'] == handle or cc['rank'] == y['rank']:
+                            diff = cc['newRating'] - cc['oldRating']
+                            if diff > 0:
+                                s += '|+' + str(diff)
+                            else:
+                                s += '|' + str(diff)
+                            break
                 vim.current.buffer.append(s.encode('utf-8'))
             vim.command("3,$EasyAlign *| {'a':'c'}")
             del vim.current.buffer[0]
@@ -625,6 +646,8 @@ if col >= 0 and tasks[col] != '|' and row > 2:
                 submissionExt += 'pas'
             elif 'uby' in submissionLang:
                 submissionExt += 'rb'
+            elif 'Perl' in submissionLang:
+                submissionExt += 'pl'
             else:
                 submissionExt += 'txt'
             vim.command(vim.eval('g:CodeForcesCommandSubmission') + ' ' + handle + index + submissionExt)
