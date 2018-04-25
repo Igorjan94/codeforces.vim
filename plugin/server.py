@@ -56,7 +56,7 @@ if __name__ == '__main__':
         if g.browser.current_url != g.login_url:
             g.browser.get(g.login_url)
             sleep()
-        g.browser.find_element_by_id("handle").send_keys(g.handle)
+        g.browser.find_element_by_id("handleOrEmail").send_keys(g.handle)
         g.browser.find_element_by_id("password").send_keys(g.password)
         g.browser.find_element_by_id("remember").click()
         sleep()
