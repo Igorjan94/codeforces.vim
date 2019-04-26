@@ -1,8 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #code of CountZero(http://github.com/cnt0/cfsubmit)
 
 import time
-from urlparse import urljoin
+try:
+    from urlparse import urljoin
+except:
+    from urllib.parse import urljoin
 
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
