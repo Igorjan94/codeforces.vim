@@ -11,7 +11,6 @@ from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from flask import request
 from flask import Flask
-from flask import g
 
 # local server urls
 SERVER_HOST = 'localhost'
@@ -28,6 +27,14 @@ GET_FRIENDS_PART = 'get_friends'
 CF_MAIN_URL = 'http://codeforces.com/'
 CF_LOGIN_URL = urljoin(CF_MAIN_URL, 'enter')
 CF_FRIENDS_URL = urljoin(CF_MAIN_URL, 'friends')
+
+class dotdict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+global g
+g = dotdict()
 
 if __name__ == '__main__':
     app = Flask(__name__)
@@ -54,6 +61,7 @@ if __name__ == '__main__':
 
 
     def login():
+        global g
         if g.browser.current_url == g.submit_url:
             return
         if g.browser.current_url != g.login_url:
@@ -69,6 +77,7 @@ if __name__ == '__main__':
 
     @app.route(urljoin('/', INIT_CONTEST_PART))
     def init_contest():
+        global g
         contestId = request.form['num']
         g.submit_url = urljoin(g.default_url, '{}/{}/submit'.format('contest' if int(contestId) < 100000 else 'gym', contestId))
         g.browser.get(g.submit_url)
@@ -77,6 +86,7 @@ if __name__ == '__main__':
 
     @app.route(urljoin('/', INIT_SERVER_PART))
     def init_server():
+        global g
         g.handle = request.form['handle']
         g.password = request.form['password']
         login()
@@ -84,6 +94,7 @@ if __name__ == '__main__':
 
 
     def cf_submit(id, lang, text):
+        global g
         try:
             Select(g.browser.find_element_by_name('submittedProblemIndex')).select_by_value(id)
             Select(g.browser.find_element_by_name('programTypeId')).select_by_value(lang)
@@ -96,6 +107,7 @@ if __name__ == '__main__':
 
     @app.route(urljoin('/', GET_FRIENDS_PART))
     def get_friends():
+        global g
         if g.browser.current_url != CF_FRIENDS_URL:
             g.browser.get(CF_FRIENDS_URL)
             sleep()
@@ -103,6 +115,7 @@ if __name__ == '__main__':
 
     @app.route(urljoin('/', SUBMIT_PART), methods=['POST'])
     def submit():
+        global g
         cf_submit(request.form['id'], request.form['lang'], request.form['text'])
         sleep()
         g.browser.get(g.submit_url)

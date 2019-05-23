@@ -84,7 +84,8 @@ ext_id          =  {
     'rb':    '8',
     'scala': '20',
     'js':    '34',
-    'pi':    '44'
+    'pi':    '44',
+    'kt':    '48'
 }
 
 def entity2char(x):
