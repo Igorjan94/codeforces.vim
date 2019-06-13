@@ -669,8 +669,21 @@ python << EOF
 
 
 def formatString(s):
-    return str(s['problem']['contestId']) + s['problem']['index'] + ' ' + \
-        '{:>25}'.format(s['verdict'] + '(' + str(s['passedTestCount'] + 1) + ') ') + str(s['timeConsumedMillis']) + ' ms'
+    def getML(m):
+        for suffix in ['B', 'KB', 'MB', 'GB']:
+            if m <= 1024:
+                return str(m), suffix
+            m /= 1024
+
+    ml, size = getML(s['memoryConsumedBytes'])
+    return '{:6} {:>25} ({:<3} tests, {:<4} ms, {:<4} {:<2})'.format(
+        str(s['problem']['contestId']) + s['problem']['index'],
+        s['verdict'],
+        str(s['passedTestCount'] + 1),
+        str(s['timeConsumedMillis']),
+        ml,
+        size
+    )
 
 while True:
     try:
